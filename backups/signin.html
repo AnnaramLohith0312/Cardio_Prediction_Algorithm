@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sign In | Cardio Risk Predictor</title>
+<!-- Google Fonts: Manrope for headlines, Inter for body -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed": "#ffdbce",
+                    "on-primary": "#ffffff",
+                    "surface-dim": "#d7dbd9",
+                    "surface-glass": "rgba(255, 255, 255, 0.7)",
+                    "on-primary-container": "#a3faef",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-tint": "#006a63",
+                    "inverse-on-surface": "#eef1f0",
+                    "tertiary-fixed-dim": "#ffb598",
+                    "secondary": "#0058be",
+                    "on-primary-fixed-variant": "#00504a",
+                    "on-surface": "#181c1c",
+                    "primary-container": "#0f766e",
+                    "surface-bright": "#f7faf8",
+                    "risk-low": "#10B981",
+                    "inverse-surface": "#2d3130",
+                    "on-secondary-container": "#fefcff",
+                    "background": "#f7faf8",
+                    "risk-high": "#EF4444",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#72361b",
+                    "on-secondary": "#ffffff",
+                    "surface-container-high": "#e5e9e7",
+                    "outline": "#6e7977",
+                    "error-container": "#ffdad6",
+                    "outline-variant": "#bdc9c6",
+                    "surface-container": "#ebefed",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#7f4025",
+                    "on-secondary-fixed-variant": "#004395",
+                    "on-primary-fixed": "#00201d",
+                    "slate-text": "#0F172A",
+                    "on-tertiary-fixed": "#370e00",
+                    "error": "#ba1a1a",
+                    "on-background": "#181c1c",
+                    "inverse-primary": "#80d5cb",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "surface-variant": "#e0e3e1",
+                    "primary-fixed-dim": "#80d5cb",
+                    "on-secondary-fixed": "#001a42",
+                    "surface-container-highest": "#e0e3e1",
+                    "primary-fixed": "#9cf2e8",
+                    "on-surface-variant": "#3e4947",
+                    "tertiary-container": "#9c573a",
+                    "on-error": "#ffffff",
+                    "surface-container-low": "#f1f4f3",
+                    "on-tertiary-container": "#ffe5db",
+                    "surface": "#f7faf8",
+                    "secondary-container": "#2170e4",
+                    "secondary-fixed": "#d8e2ff",
+                    "primary": "#005c55"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-padding": "5rem",
+                    "stack-md": "1rem",
+                    "stack-sm": "0.5rem",
+                    "container-max": "1280px",
+                    "stack-lg": "2rem",
+                    "gutter": "1.5rem"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Manrope"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        display: inline-block;
+        vertical-align: middle;
+      }
+      .glass-card {
+        background: rgba(255, 255, 255, 0.7);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+      }
+      body {
+        background: radial-gradient(circle at top right, #f1f4f3 0%, #f7faf8 100%);
+      }
+      .auth-transition {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col font-body-md text-on-surface selection:bg-primary-fixed selection:text-on-primary-fixed">
+<!-- Top AppBar (Suppressed for transactional focus as per logic) -->
+<header class="w-full flex justify-between items-center px-gutter h-16 max-w-container-max mx-auto absolute top-0 left-0 right-0 z-10">
+<div class="font-headline-md text-headline-md font-extrabold text-primary tracking-tight">
+            Cardio Risk Predictor
+        </div>
+</header>
+<main class="flex-grow flex items-center justify-center px-4 py-20 relative overflow-hidden">
+<!-- Atmospheric background element -->
+<div class="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-24 -right-24 w-96 h-96 bg-secondary/5 rounded-full blur-3xl pointer-events-none"></div>
+<!-- Auth Card Container -->
+<div class="w-full max-w-md auth-transition">
+<div class="glass-card border border-outline-variant/30 shadow-xl rounded-xl p-8 md:p-10">
+<!-- Header -->
+<div class="text-center mb-8">
+<div class="inline-flex items-center justify-center w-12 h-12 bg-primary/10 rounded-full mb-4">
+<span class="material-symbols-outlined text-primary text-3xl">favorite</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-slate-text mb-2">Welcome back</h1>
+<p class="font-body-md text-on-surface-variant max-w-[280px] mx-auto">
+                        Access your saved assessments and personalized heart health insights.
+                    </p>
+</div>
+<!-- Form -->
+<form class="space-y-6" id="signInForm" onsubmit="return false">
+<!-- Email -->
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant block ml-1" for="email">Email address</label>
+<div class="relative group">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">mail</span>
+<input class="w-full pl-12 pr-4 py-3 bg-white/50 border border-outline-variant rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-body-md text-on-surface" id="email" placeholder="name@medical.com" required="" type="email"/>
+</div>
+</div>
+<!-- Password -->
+<div class="space-y-2">
+<div class="flex justify-between items-center ml-1">
+<label class="font-label-md text-label-md text-on-surface-variant" for="password">Password</label>
+<a class="font-label-sm text-label-sm text-primary hover:text-primary-container transition-colors" href="#">Forgot password?</a>
+</div>
+<div class="relative group" id="passwordWrapper">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">lock</span>
+<input class="w-full pl-12 pr-12 py-3 bg-white/50 border border-outline-variant rounded-lg outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all font-body-md text-on-surface" id="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-on-surface-variant transition-colors" id="togglePassword" type="button">
+<span class="material-symbols-outlined" id="passwordIcon">visibility</span>
+</button>
+</div>
+</div>
+<!-- Remember Me -->
+<div class="flex items-center space-x-2 ml-1">
+<input class="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary/30 transition-all" id="remember" type="checkbox"/>
+<label class="font-label-sm text-label-sm text-on-surface-variant cursor-pointer select-none" for="remember">Remember me for 30 days</label>
+</div>
+<!-- CTA -->
+<button class="w-full bg-primary hover:bg-primary-container text-on-primary font-label-md text-label-md py-4 rounded-lg shadow-md hover:shadow-lg active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-2" type="submit">
+                        Sign In
+                        <span class="material-symbols-outlined text-lg">arrow_forward</span>
+</button>
+</form>
+<!-- Divider -->
+<div class="relative my-8">
+<div class="absolute inset-0 flex items-center">
+<div class="w-full border-t border-outline-variant/30"></div>
+</div>
+<div class="relative flex justify-center text-label-sm font-label-sm">
+<span class="bg-white/0 px-2 text-outline">Or continue with</span>
+</div>
+</div>
+<!-- OAuth Social -->
+<div class="grid grid-cols-1 gap-4">
+<button class="flex items-center justify-center gap-3 w-full py-3 px-4 border border-outline-variant rounded-lg bg-white/50 hover:bg-surface-container-high transition-colors font-label-md text-label-md text-on-surface">
+<img alt="Google" class="w-5 h-5" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDYQ8hSzl-R8Xln7w-K0Dm2W0dTPwT25wW8oKm1l6yLSxmPBxd28Lh1YyoCRFXHAVLkCTpILcaWfWoQz3DBgR3nuWch7KreUKWFy8dVQrZnBrMypVUsG_XJpWaTp5lhWiEyo2_zYYLLlVrLb74B1WmXoPVqItWaSNc-D8d59HoWhTk343dCyZfcDfNWjuCtlgAbJD2lM-sSOmmlxhpg6iRdzeSETaBMalTMLueip75aT064v88zLxKyh-kgaJkS8sMJ9fVU-gS5y6g"/>
+                        Google
+                    </button>
+</div>
+<!-- Footnote -->
+<div class="mt-8 text-center">
+<p class="font-body-md text-on-surface-variant">
+                        Don't have an account? 
+                        <a class="text-primary font-bold hover:underline transition-all" href="#">Sign Up</a>
+</p>
+</div>
+</div>
+<!-- Verification Badge -->
+<div class="mt-6 flex items-center justify-center gap-2 text-outline">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">verified_user</span>
+<span class="font-label-sm text-label-sm">Medical-grade data encryption (HIPAA Compliant)</span>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="w-full py-stack-lg px-gutter max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-stack-md border-t border-outline-variant/50">
+<div class="flex flex-col items-center md:items-start">
+<div class="font-headline-md text-headline-md font-bold text-on-surface mb-2">Cardio Risk Predictor</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 Cardio Risk Predictor. AI-driven intelligence for heart health.</p>
+</div>
+<div class="flex flex-wrap justify-center gap-x-6 gap-y-2">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Scientific Methodology</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Contact</a>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 bg-risk-low rounded-full animate-pulse"></div>
+<span class="font-label-sm text-label-sm text-outline font-mono">MODEL v2.4.1-STABLE</span>
+</div>
+</footer>
+<script>
+        // Micro-interactions for Auth UI
+        const passwordInput = document.getElementById('password');
+        const toggleBtn = document.getElementById('togglePassword');
+        const icon = document.getElementById('passwordIcon');
+
+        toggleBtn.addEventListener('click', () => {
+            const isPassword = passwordInput.getAttribute('type') === 'password';
+            passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+            icon.textContent = isPassword ? 'visibility_off' : 'visibility';
+        });
+
+        // Simple feedback for button
+        const form = document.getElementById('signInForm');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button[type="submit"]');
+            const originalContent = btn.innerHTML;
+            
+            btn.disabled = true;
+            btn.innerHTML = `<span class="material-symbols-outlined animate-spin">progress_activity</span> Authenticating...`;
+            
+            setTimeout(() => {
+                btn.innerHTML = originalContent;
+                btn.disabled = false;
+                alert('Sign in initiated with demo credentials.');
+            }, 1500);
+        });
+    </script>
+</body></html>

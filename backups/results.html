@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cardio Risk Predictor | Results</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-container": "#0f766e",
+                      "on-primary-fixed": "#00201d",
+                      "on-secondary-fixed-variant": "#004395",
+                      "inverse-on-surface": "#eef1f0",
+                      "secondary-fixed": "#d8e2ff",
+                      "on-tertiary": "#ffffff",
+                      "error": "#ba1a1a",
+                      "tertiary": "#7f4025",
+                      "on-tertiary-container": "#ffe5db",
+                      "inverse-surface": "#2d3130",
+                      "on-primary": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-fixed-variant": "#72361b",
+                      "on-background": "#181c1c",
+                      "on-secondary-container": "#fefcff",
+                      "surface-container": "#ebefed",
+                      "on-surface-variant": "#3e4947",
+                      "surface-bright": "#f7faf8",
+                      "tertiary-fixed": "#ffdbce",
+                      "surface-tint": "#006a63",
+                      "risk-high": "#EF4444",
+                      "on-primary-container": "#a3faef",
+                      "surface-container-high": "#e5e9e7",
+                      "secondary-container": "#2170e4",
+                      "error-container": "#ffdad6",
+                      "tertiary-container": "#9c573a",
+                      "slate-text": "#0F172A",
+                      "primary-fixed": "#9cf2e8",
+                      "inverse-primary": "#80d5cb",
+                      "surface-container-highest": "#e0e3e1",
+                      "surface-glass": "rgba(255, 255, 255, 0.7)",
+                      "primary-fixed-dim": "#80d5cb",
+                      "surface-variant": "#e0e3e1",
+                      "surface-dim": "#d7dbd9",
+                      "surface-container-low": "#f1f4f3",
+                      "outline": "#6e7977",
+                      "on-primary-fixed-variant": "#00504a",
+                      "secondary": "#0058be",
+                      "background": "#f7faf8",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "on-tertiary-fixed": "#370e00",
+                      "tertiary-fixed-dim": "#ffb598",
+                      "on-secondary-fixed": "#001a42",
+                      "risk-low": "#10B981",
+                      "outline-variant": "#bdc9c6",
+                      "on-surface": "#181c1c",
+                      "on-secondary": "#ffffff",
+                      "surface": "#f7faf8",
+                      "primary": "#005c55",
+                      "on-error": "#ffffff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-lg": "2rem",
+                      "stack-md": "1rem",
+                      "stack-sm": "0.5rem",
+                      "section-padding": "5rem",
+                      "gutter": "1.5rem",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "label-sm": ["Inter"],
+                      "headline-md": ["Manrope"],
+                      "body-lg": ["Inter"],
+                      "label-md": ["Inter"],
+                      "headline-lg-mobile": ["Manrope"],
+                      "headline-lg": ["Manrope"],
+                      "display-lg": ["Manrope"],
+                      "body-md": ["Inter"]
+              },
+              "fontSize": {
+                      "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                      "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        @keyframes gauge-fill {
+            from { stroke-dasharray: 0 100; }
+            to { stroke-dasharray: 68 100; }
+        }
+        .animate-gauge {
+            animation: gauge-fill 1.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="bg-background font-body-md text-on-surface">
+<!-- TopAppBar -->
+<header class="bg-surface-glass/70 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm sticky top-0 z-50 docked full-width">
+<div class="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-16">
+<div class="font-headline-md text-headline-md font-extrabold text-primary tracking-tight">Cardio Risk Predictor</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Home</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Assessment</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md" href="#">Insights</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">History</a>
+</nav>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant hover:bg-primary-container/10 p-2 rounded-full cursor-pointer transition-all">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant hover:bg-primary-container/10 p-2 rounded-full cursor-pointer transition-all">settings</span>
+<div class="flex items-center gap-2 text-primary font-label-md text-label-md cursor-pointer hover:bg-primary-container/10 px-3 py-1.5 rounded-lg transition-all">
+<span>Profile</span>
+</div>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-gutter py-stack-lg">
+<!-- Result Header Section -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-8 mb-stack-lg">
+<!-- Main Gauge Card (Bento Area) -->
+<section class="lg:col-span-7 flex flex-col gap-6">
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-8 shadow-sm flex flex-col items-center text-center">
+<div class="flex justify-between w-full mb-6 items-start">
+<div class="text-left">
+<h1 class="font-headline-lg text-headline-lg text-slate-text">Risk Prediction</h1>
+<p class="font-body-md text-on-surface-variant">Based on your recent diagnostic data</p>
+</div>
+<span class="bg-risk-low/10 text-risk-low px-4 py-1.5 rounded-full font-label-md text-label-md border border-risk-low/20">Low Risk</span>
+</div>
+<!-- Circular Gauge Implementation -->
+<div class="relative w-64 h-64 flex items-center justify-center my-4">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 36 36">
+<path class="stroke-surface-container-high" d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
+<path class="stroke-primary animate-gauge" d="M18 2.0845
+                                    a 15.9155 15.9155 0 0 1 0 31.831
+                                    a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="24, 100" stroke-linecap="round" stroke-width="3"></path>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-display-lg text-display-lg text-primary">24%</span>
+<span class="font-label-md text-label-md text-on-surface-variant uppercase tracking-widest">Cumulative Risk</span>
+</div>
+</div>
+<div class="bg-surface-container-low rounded-lg p-6 w-full text-left border border-outline-variant/10">
+<h3 class="font-headline-md text-headline-md mb-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">auto_awesome</span>
+                            Health Insight
+                        </h3>
+<p class="font-body-md text-on-surface-variant leading-relaxed">
+                            Your cardiovascular health markers are currently within a stable range. While your risk is considered <strong>Low</strong>, maintaining a consistent exercise routine and monitoring sodium intake can further strengthen your long-term heart resilience.
+                        </p>
+</div>
+</div>
+</section>
+<!-- Feature Importance & Actions (Sidebar Area) -->
+<aside class="lg:col-span-5 flex flex-col gap-6">
+<!-- Feature Importance Card -->
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-6 shadow-sm">
+<h3 class="font-label-md text-label-md text-primary mb-4 uppercase tracking-widest">Key Risk Drivers</h3>
+<div class="space-y-4">
+<div class="flex flex-col gap-2">
+<div class="flex justify-between font-label-md text-label-md">
+<span class="text-on-surface">Systolic Blood Pressure</span>
+<span class="text-primary">42% Impact</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 42%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between font-label-md text-label-md">
+<span class="text-on-surface">BMI (24.5)</span>
+<span class="text-on-surface-variant">28% Impact</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-outline h-full rounded-full" style="width: 28%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-2">
+<div class="flex justify-between font-label-md text-label-md">
+<span class="text-on-surface">Age (45)</span>
+<span class="text-on-surface-variant">15% Impact</span>
+</div>
+<div class="w-full bg-surface-container-high h-2 rounded-full overflow-hidden">
+<div class="bg-outline h-full rounded-full" style="width: 15%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Action Panel -->
+<div class="bg-primary-container text-on-primary-container rounded-xl p-6 shadow-md">
+<h4 class="font-headline-md text-headline-md mb-4 text-on-primary-fixed">Next Steps</h4>
+<div class="flex flex-col gap-3">
+<button class="bg-white text-primary-container font-label-md text-label-md py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform active:scale-95">
+<span class="material-symbols-outlined">save</span>
+                            Save Result to History
+                        </button>
+<button class="bg-primary text-white font-label-md text-label-md py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:scale-[1.02] transition-transform active:scale-95">
+<span class="material-symbols-outlined">download</span>
+                            Download Medical Report
+                        </button>
+<button class="bg-transparent border border-on-primary-container/30 text-on-primary-container font-label-md text-label-md py-3 px-4 rounded-lg flex items-center justify-center gap-2 hover:bg-white/10 transition-all">
+<span class="material-symbols-outlined">refresh</span>
+                            Reassess Parameters
+                        </button>
+</div>
+</div>
+<!-- AI Disclaimer -->
+<div class="flex gap-3 px-2">
+<span class="material-symbols-outlined text-outline text-[18px]">info</span>
+<p class="font-label-sm text-label-sm text-outline leading-tight">
+                        This prediction is generated by a clinical-grade AI model. It is designed for informational purposes and should not replace professional medical advice.
+                    </p>
+</div>
+</aside>
+</div>
+<!-- Input Recap Table Section -->
+<section class="mt-8">
+<div class="bg-surface-container-lowest border border-outline-variant/30 rounded-xl overflow-hidden shadow-sm">
+<div class="bg-surface-container-low px-6 py-4 border-b border-outline-variant/30 flex justify-between items-center">
+<h2 class="font-headline-md text-headline-md text-slate-text">Input Data Recap</h2>
+<span class="font-label-sm text-label-sm text-outline">Ref ID: CR-884210</span>
+</div>
+<div class="grid grid-cols-2 md:grid-cols-4 divide-x divide-y divide-outline-variant/20">
+<div class="p-6">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-tighter mb-1">Age</p>
+<p class="font-headline-md text-headline-md text-primary">45 yr</p>
+</div>
+<div class="p-6">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-tighter mb-1">Gender</p>
+<p class="font-headline-md text-headline-md text-primary">Male</p>
+</div>
+<div class="p-6">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-tighter mb-1">Cholesterol</p>
+<p class="font-headline-md text-headline-md text-risk-low">Normal</p>
+</div>
+<div class="p-6">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-tighter mb-1">Systolic BP</p>
+<p class="font-headline-md text-headline-md text-tertiary">132 mmHg</p>
+</div>
+<div class="p-6">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-tighter mb-1">Height/Weight</p>
+<p class="font-headline-md text-headline-md text-primary">180cm / 80kg</p>
+</div>
+<div class="p-6">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-tighter mb-1">Smoking</p>
+<p class="font-headline-md text-headline-md text-primary">No</p>
+</div>
+<div class="p-6">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-tighter mb-1">Physical Act.</p>
+<p class="font-headline-md text-headline-md text-primary">Active</p>
+</div>
+<div class="p-6">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-tighter mb-1">Glucose</p>
+<p class="font-headline-md text-headline-md text-primary">Normal</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Visual Context / Lifestyle Image -->
+<div class="mt-12 rounded-2xl overflow-hidden relative h-64 w-full shadow-lg">
+<img alt="Doctor reviewing digital health charts on a modern tablet in a clean, brightly lit medical facility." class="w-full h-full object-cover" data-alt="A professional healthcare environment with soft, high-key natural lighting. A medical practitioner's hands are visible interacting with a transparent, glowing digital interface displaying cardiovascular data and heart-rate waves. The color palette is composed of serene teals, crisp whites, and clinical blues, reflecting a trustworthy, high-tech AI diagnostic experience. The mood is calm, advanced, and reassuringly precise." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCPvsatN8ux94950-2xgwMB66fL9_3H8Cgba3s6w6ohywSM7JBQtNBhYMWKDlp8fBk0h2Bzg7AlQ9Gg1-u-OaZxeqJCm5HBgk5786otFL7Wgbw8L5pGt2li4-eF9-DTmi-ODvRE4vgc9c-IM0NEd5kOqldM7GSdswiXUguNmtHSeq0pL_BIgtGLBVDcr1XJive2IFtjyIt3G4Vr7sAF6n42SndXVYIXBuKX66g9vb9fxbG2UQ5CdqtL4tD2gV_tT7HhyhdGc3qlHI0"/>
+<div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent flex items-center px-12">
+<div class="max-w-md text-white">
+<h3 class="font-headline-lg text-headline-lg mb-2">Integrated Care</h3>
+<p class="font-body-md">Connect your wearable devices to automate these assessments and receive real-time risk fluctuations.</p>
+</div>
+</div>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-outline-variant/50 w-full py-stack-lg px-gutter max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-stack-md">
+<div class="flex flex-col gap-1 items-center md:items-start">
+<div class="font-headline-md text-headline-md font-bold text-on-surface">Cardio Risk Predictor</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 Cardio Risk Predictor. AI-driven intelligence for heart health.</p>
+</div>
+<div class="flex gap-6 items-center">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Scientific Methodology</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Contact</a>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-2 h-2 rounded-full bg-risk-low animate-pulse"></div>
+<span class="font-label-sm text-label-sm text-outline font-mono">v2.4.1 (Stable)</span>
+</div>
+</footer>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-3 md:hidden bg-surface-glass/80 backdrop-blur-lg border-t border-outline-variant/20 shadow-lg rounded-t-xl">
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">health_and_safety</span>
+<span class="font-label-sm text-label-sm">Assess</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 scale-90 transition-transform">
+<span class="material-symbols-outlined">speed</span>
+<span class="font-label-sm text-label-sm">Results</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</div>
+</nav>
+<script>
+        // Simple interactive elements
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('scale-95');
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('scale-95');
+            });
+            button.addEventListener('mouseleave', () => {
+                button.classList.remove('scale-95');
+            });
+        });
+
+        // Initialize any specific interaction logic here
+        window.addEventListener('DOMContentLoaded', () => {
+            console.log('Cardio Risk Predictor Results Initialized');
+        });
+    </script>
+</body></html>

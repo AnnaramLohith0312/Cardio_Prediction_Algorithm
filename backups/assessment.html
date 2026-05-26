@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cardio Risk Predictor | Vitalis Intelligence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "primary-container": "#0f766e",
+                        "on-primary-fixed": "#00201d",
+                        "on-secondary-fixed-variant": "#004395",
+                        "inverse-on-surface": "#eef1f0",
+                        "secondary-fixed": "#d8e2ff",
+                        "on-tertiary": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary": "#7f4025",
+                        "on-tertiary-container": "#ffe5db",
+                        "inverse-surface": "#2d3130",
+                        "on-primary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-fixed-variant": "#72361b",
+                        "on-background": "#181c1c",
+                        "on-secondary-container": "#fefcff",
+                        "surface-container": "#ebefed",
+                        "on-surface-variant": "#3e4947",
+                        "surface-bright": "#f7faf8",
+                        "tertiary-fixed": "#ffdbce",
+                        "surface-tint": "#006a63",
+                        "risk-high": "#EF4444",
+                        "on-primary-container": "#a3faef",
+                        "surface-container-high": "#e5e9e7",
+                        "secondary-container": "#2170e4",
+                        "error-container": "#ffdad6",
+                        "tertiary-container": "#9c573a",
+                        "slate-text": "#0F172A",
+                        "primary-fixed": "#9cf2e8",
+                        "inverse-primary": "#80d5cb",
+                        "surface-container-highest": "#e0e3e1",
+                        "surface-glass": "rgba(255, 255, 255, 0.7)",
+                        "primary-fixed-dim": "#80d5cb",
+                        "surface-variant": "#e0e3e1",
+                        "surface-dim": "#d7dbd9",
+                        "surface-container-low": "#f1f4f3",
+                        "outline": "#6e7977",
+                        "on-primary-fixed-variant": "#00504a",
+                        "secondary": "#0058be",
+                        "background": "#f7faf8",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "on-tertiary-fixed": "#370e00",
+                        "tertiary-fixed-dim": "#ffb598",
+                        "on-secondary-fixed": "#001a42",
+                        "risk-low": "#10B981",
+                        "outline-variant": "#bdc9c6",
+                        "on-surface": "#181c1c",
+                        "on-secondary": "#ffffff",
+                        "surface": "#f7faf8",
+                        "primary": "#005c55",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "stack-lg": "2rem",
+                        "stack-md": "1rem",
+                        "stack-sm": "0.5rem",
+                        "section-padding": "5rem",
+                        "gutter": "1.5rem",
+                        "container-max": "1280px"
+                    },
+                    "fontFamily": {
+                        "label-sm": ["Inter"],
+                        "headline-md": ["Manrope"],
+                        "body-lg": ["Inter"],
+                        "label-md": ["Inter"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "display-lg": ["Manrope"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                        "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                        "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.5);
+        }
+        .custom-slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            background: #0058be;
+            cursor: pointer;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        html { scroll-behavior: smooth; }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen">
+<!-- TopAppBar -->
+<header class="bg-surface-glass/70 backdrop-blur-xl docked full-width top-0 sticky z-50 border-b border-outline-variant/30 shadow-sm h-16">
+<div class="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-full">
+<div class="font-headline-md text-headline-md font-extrabold text-primary tracking-tight">Cardio Risk Predictor</div>
+<nav class="hidden md:flex gap-8 items-center h-full">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Home</a>
+<a class="text-primary font-bold border-b-2 border-primary pb-1 font-label-md text-label-md" href="#">Assessment</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">Insights</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-md text-label-md" href="#">History</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="p-2 rounded-full hover:bg-primary-container/10 transition-all duration-200 active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="p-2 rounded-full hover:bg-primary-container/10 transition-all duration-200 active:scale-95">
+<span class="material-symbols-outlined text-on-surface-variant">settings</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-secondary-container flex items-center justify-center text-white font-bold ml-2">
+                    JS
+                </div>
+</div>
+</div>
+</header>
+<main class="max-w-container-max mx-auto px-gutter py-stack-lg flex flex-col md:flex-row gap-8">
+<!-- Assessment Form Section -->
+<div class="w-full md:w-2/3 lg:w-3/4 flex flex-col gap-10">
+<!-- Hero Content -->
+<section class="mb-2">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Health Assessment</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">
+                    Complete the following sections with your current health data. Our AI model analyzes over 20 cardiovascular markers to provide a precision risk profile.
+                </p>
+</section>
+<!-- Personal Info Card -->
+<section class="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/30 shadow-sm" id="personal-info">
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-primary-container/10 p-2 rounded-lg">
+<span class="material-symbols-outlined text-primary">person</span>
+</div>
+<h2 class="font-headline-md text-headline-md">Personal Information</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="flex flex-col gap-3">
+<label class="font-label-md text-label-md text-on-surface-variant">Age (Years)</label>
+<input class="w-full h-12 px-4 rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" placeholder="e.g. 45" type="number"/>
+</div>
+<div class="flex flex-col gap-3">
+<label class="font-label-md text-label-md text-on-surface-variant">Biological Gender</label>
+<div class="flex gap-4">
+<button class="flex-1 h-12 flex items-center justify-center gap-2 rounded-lg border-2 border-secondary bg-secondary-fixed/30 text-on-secondary-fixed-variant font-label-md active:scale-95 transition-transform">
+<span class="material-symbols-outlined">male</span> Male
+                            </button>
+<button class="flex-1 h-12 flex items-center justify-center gap-2 rounded-lg border border-outline-variant hover:border-secondary transition-all font-label-md active:scale-95">
+<span class="material-symbols-outlined">female</span> Female
+                            </button>
+</div>
+</div>
+</div>
+</section>
+<!-- Body Metrics Section -->
+<section class="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/30 shadow-sm" id="body-metrics">
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-primary-container/10 p-2 rounded-lg">
+<span class="material-symbols-outlined text-primary">straighten</span>
+</div>
+<h2 class="font-headline-md text-headline-md">Body Metrics</h2>
+</div>
+<div class="space-y-12">
+<div class="space-y-6">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface-variant">Height (cm)</label>
+<span class="text-primary font-bold text-headline-md" id="height-val">175</span>
+</div>
+<input class="w-full h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer custom-slider" max="220" min="120" oninput="document.getElementById('height-val').innerText = this.value; updateBMI()" step="1" type="range" value="175"/>
+</div>
+<div class="space-y-6">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface-variant">Weight (kg)</label>
+<span class="text-primary font-bold text-headline-md" id="weight-val">75</span>
+</div>
+<input class="w-full h-2 bg-surface-container-high rounded-lg appearance-none cursor-pointer custom-slider" max="180" min="40" oninput="document.getElementById('weight-val').innerText = this.value; updateBMI()" step="1" type="range" value="75"/>
+</div>
+</div>
+</section>
+<!-- Blood Pressure Card -->
+<section class="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/30 shadow-sm" id="blood-pressure">
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-primary-container/10 p-2 rounded-lg">
+<span class="material-symbols-outlined text-primary">monitor_heart</span>
+</div>
+<h2 class="font-headline-md text-headline-md">Blood Pressure</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="flex flex-col gap-3">
+<label class="font-label-md text-label-md text-on-surface-variant">Systolic (Top Number)</label>
+<input class="w-full h-12 px-4 rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" id="systolic-input" oninput="updatePulsePressure()" placeholder="e.g. 120" type="number"/>
+</div>
+<div class="flex flex-col gap-3">
+<label class="font-label-md text-label-md text-on-surface-variant">Diastolic (Bottom Number)</label>
+<input class="w-full h-12 px-4 rounded-lg border border-outline-variant focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all" id="diastolic-input" oninput="updatePulsePressure()" placeholder="e.g. 80" type="number"/>
+</div>
+</div>
+<div class="mt-4 flex items-center gap-2 text-on-surface-variant/70 text-label-sm">
+<span class="material-symbols-outlined text-[18px]">info</span>
+                    Normal range is typically around 120/80 mmHg.
+                </div>
+</section>
+<!-- Health Indicators Bento -->
+<section class="grid grid-cols-1 lg:grid-cols-2 gap-6" id="health-indicators">
+<div class="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/30 shadow-sm">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary">opacity</span>
+<h3 class="font-label-md text-label-md text-on-surface">Cholesterol Level</h3>
+</div>
+<div class="flex bg-surface-container p-1 rounded-full relative overflow-hidden">
+<button class="flex-1 py-2 text-label-md rounded-full bg-white shadow-sm z-10 transition-all">Normal</button>
+<button class="flex-1 py-2 text-label-md text-on-surface-variant hover:text-on-surface z-10">Above Normal</button>
+<button class="flex-1 py-2 text-label-md text-on-surface-variant hover:text-on-surface z-10">Well Above</button>
+</div>
+</div>
+<div class="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/30 shadow-sm">
+<div class="flex items-center gap-3 mb-6">
+<span class="material-symbols-outlined text-primary">biotech</span>
+<h3 class="font-label-md text-label-md text-on-surface">Glucose Level</h3>
+</div>
+<div class="flex bg-surface-container p-1 rounded-full relative overflow-hidden">
+<button class="flex-1 py-2 text-label-md rounded-full bg-white shadow-sm z-10 transition-all">Normal</button>
+<button class="flex-1 py-2 text-label-md text-on-surface-variant hover:text-on-surface z-10">Above Normal</button>
+<button class="flex-1 py-2 text-label-md text-on-surface-variant hover:text-on-surface z-10">Well Above</button>
+</div>
+</div>
+</section>
+<!-- Lifestyle Habits -->
+<section class="bg-surface-container-lowest rounded-xl p-8 border border-outline-variant/30 shadow-sm" id="lifestyle">
+<div class="flex items-center gap-3 mb-8">
+<div class="bg-primary-container/10 p-2 rounded-lg">
+<span class="material-symbols-outlined text-primary">style</span>
+</div>
+<h2 class="font-headline-md text-headline-md">Lifestyle Habits</h2>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="flex flex-col gap-4">
+<label class="font-label-md text-label-md text-on-surface-variant">Tobacco Use</label>
+<div class="flex gap-2">
+<button class="px-4 py-2 rounded-full border border-outline-variant text-label-sm hover:border-primary transition-all">Never</button>
+<button class="px-4 py-2 rounded-full border-2 border-secondary bg-secondary-fixed/30 text-on-secondary-fixed-variant text-label-sm">Active</button>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<label class="font-label-md text-label-md text-on-surface-variant">Alcohol Intake</label>
+<div class="flex gap-2">
+<button class="px-4 py-2 rounded-full border-2 border-secondary bg-secondary-fixed/30 text-on-secondary-fixed-variant text-label-sm">Minimal</button>
+<button class="px-4 py-2 rounded-full border border-outline-variant text-label-sm hover:border-primary transition-all">Regular</button>
+</div>
+</div>
+<div class="flex flex-col gap-4">
+<label class="font-label-md text-label-md text-on-surface-variant">Physical Activity</label>
+<div class="flex gap-2">
+<button class="px-4 py-2 rounded-full border border-outline-variant text-label-sm hover:border-primary transition-all">Low</button>
+<button class="px-4 py-2 rounded-full border-2 border-secondary bg-secondary-fixed/30 text-on-secondary-fixed-variant text-label-sm">Active</button>
+</div>
+</div>
+</div>
+</section>
+<div class="flex justify-end pt-4 pb-20">
+<button class="bg-secondary text-white px-10 py-4 rounded-xl font-headline-md hover:shadow-lg hover:translate-y-[-2px] transition-all active:scale-95 flex items-center gap-3">
+                    Calculate Risk Profile
+                    <span class="material-symbols-outlined">trending_flat</span>
+</button>
+</div>
+</div>
+<!-- Sticky Insights Panel -->
+<aside class="hidden md:block w-1/3 lg:w-1/4">
+<div class="sticky top-24 flex flex-col gap-6">
+<!-- Progress Header -->
+<div class="glass-panel rounded-xl p-6 shadow-sm overflow-hidden relative">
+<div class="absolute top-0 left-0 h-1 bg-primary-container transition-all" style="width: 65%;"></div>
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-md text-label-md text-on-surface">Form Completion</span>
+<span class="font-label-md text-label-md text-primary">65%</span>
+</div>
+<p class="text-label-sm text-on-surface-variant">Keep going! Your personalized insights are almost ready.</p>
+</div>
+<!-- BMI Insight -->
+<div class="glass-panel rounded-xl p-6 shadow-sm">
+<h3 class="font-label-md text-label-md text-on-surface-variant mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">fitness_center</span>
+                        Calculated BMI
+                    </h3>
+<div class="flex items-baseline gap-3">
+<span class="text-[32px] font-extrabold text-primary" id="bmi-val">24.5</span>
+<span class="bg-risk-low/10 text-risk-low px-3 py-1 rounded-full text-label-sm font-bold" id="bmi-status">Healthy</span>
+</div>
+<div class="mt-4 w-full h-1 bg-surface-container rounded-full flex">
+<div class="h-full bg-yellow-400" style="width: 30%"></div>
+<div class="h-full bg-green-500" style="width: 40%"></div>
+<div class="h-full bg-red-400" style="width: 30%"></div>
+</div>
+</div>
+<!-- Pulse Pressure Insight -->
+<div class="glass-panel rounded-xl p-6 shadow-sm">
+<h3 class="font-label-md text-label-md text-on-surface-variant mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">speed</span>
+                        Pulse Pressure
+                    </h3>
+<div class="flex items-baseline gap-3">
+<span class="text-[32px] font-extrabold text-primary" id="pulse-pressure-val">40</span>
+<span class="text-on-surface-variant text-label-sm">mmHg</span>
+</div>
+<p class="mt-2 text-label-sm text-on-surface-variant">High pulse pressure can be an early indicator of arterial stiffness.</p>
+</div>
+<!-- Model Stats -->
+<div class="p-6 border border-outline-variant/20 rounded-xl bg-surface-container-low">
+<div class="flex items-center gap-2 mb-2">
+<div class="w-2 h-2 rounded-full bg-risk-low animate-pulse"></div>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-mono">MODEL v4.2 STABLE</span>
+</div>
+<p class="text-label-sm text-on-surface-variant/60">Vitalis Intelligence AI Cluster · Scientific Methodology Ref: 2024.1</p>
+</div>
+</div>
+</aside>
+</main>
+<!-- BottomNavBar (Mobile Only) -->
+<nav class="fixed bottom-0 w-full z-50 flex justify-around items-center px-4 py-3 md:hidden bg-surface-glass/80 backdrop-blur-lg border-t border-outline-variant/20 shadow-[0_-4px_12px_rgba(0,0,0,0.05)] rounded-t-xl">
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">home</span>
+<span class="font-label-sm text-label-sm">Home</span>
+</div>
+<div class="flex flex-col items-center justify-center bg-primary-container text-on-primary-container rounded-full px-4 py-1 scale-90 transition-transform">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">health_and_safety</span>
+<span class="font-label-sm text-label-sm">Assess</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">speed</span>
+<span class="font-label-sm text-label-sm">Results</span>
+</div>
+<div class="flex flex-col items-center justify-center text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm text-label-sm">Profile</span>
+</div>
+</nav>
+<!-- Footer -->
+<footer class="w-full py-stack-lg px-gutter max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-stack-md border-t border-outline-variant/50 bg-surface-container-low mt-20">
+<div class="flex flex-col gap-2">
+<div class="font-headline-md text-headline-md font-bold text-on-surface">Vitalis Intelligence</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 Cardio Risk Predictor. AI-driven intelligence for heart health.</p>
+</div>
+<div class="flex gap-6">
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm hover:underline" href="#">Privacy Policy</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm hover:underline" href="#">Terms of Service</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm hover:underline" href="#">Scientific Methodology</a>
+<a class="text-on-surface-variant hover:text-primary transition-colors font-label-sm text-label-sm hover:underline" href="#">Contact</a>
+</div>
+</footer>
+<script>
+        function updateBMI() {
+            const height = document.getElementById('height-val').innerText / 100;
+            const weight = document.getElementById('weight-val').innerText;
+            const bmi = (weight / (height * height)).toFixed(1);
+            const bmiVal = document.getElementById('bmi-val');
+            const bmiStatus = document.getElementById('bmi-status');
+            
+            bmiVal.innerText = bmi;
+            
+            if (bmi < 18.5) {
+                bmiStatus.innerText = "Underweight";
+                bmiStatus.className = "bg-orange-400/10 text-orange-600 px-3 py-1 rounded-full text-label-sm font-bold";
+            } else if (bmi >= 18.5 && bmi <= 24.9) {
+                bmiStatus.innerText = "Healthy";
+                bmiStatus.className = "bg-risk-low/10 text-risk-low px-3 py-1 rounded-full text-label-sm font-bold";
+            } else if (bmi >= 25 && bmi <= 29.9) {
+                bmiStatus.innerText = "Overweight";
+                bmiStatus.className = "bg-orange-400/10 text-orange-600 px-3 py-1 rounded-full text-label-sm font-bold";
+            } else {
+                bmiStatus.innerText = "Obese";
+                bmiStatus.className = "bg-risk-high/10 text-risk-high px-3 py-1 rounded-full text-label-sm font-bold";
+            }
+        }
+
+        function updatePulsePressure() {
+            const sys = parseInt(document.getElementById('systolic-input').value) || 0;
+            const dia = parseInt(document.getElementById('diastolic-input').value) || 0;
+            const ppVal = document.getElementById('pulse-pressure-val');
+            
+            if (sys > 0 && dia > 0) {
+                const diff = sys - dia;
+                ppVal.innerText = diff;
+                
+                if (diff > 60) {
+                    ppVal.classList.add('text-risk-high');
+                    ppVal.classList.remove('text-primary');
+                } else {
+                    ppVal.classList.remove('text-risk-high');
+                    ppVal.classList.add('text-primary');
+                }
+            }
+        }
+        
+        // Initial call
+        updateBMI();
+    </script>
+</body></html>

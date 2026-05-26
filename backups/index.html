@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Cardio Risk Predictor | Premium AI Cardiovascular Screening</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-container-high": "#e5e9e7",
+                        "surface-container": "#ebefed",
+                        "tertiary-container": "#9c573a",
+                        "inverse-primary": "#80d5cb",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed": "#001a42",
+                        "secondary-fixed": "#d8e2ff",
+                        "risk-high": "#EF4444",
+                        "on-tertiary-fixed": "#370e00",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "surface-container-lowest": "#ffffff",
+                        "outline-variant": "#bdc9c6",
+                        "on-primary-container": "#a3faef",
+                        "tertiary": "#7f4025",
+                        "on-background": "#181c1c",
+                        "primary-fixed": "#9cf2e8",
+                        "risk-low": "#10B981",
+                        "surface-container-highest": "#e0e3e1",
+                        "inverse-surface": "#2d3130",
+                        "secondary-container": "#2170e4",
+                        "on-surface-variant": "#3e4947",
+                        "tertiary-fixed": "#ffdbce",
+                        "on-primary": "#ffffff",
+                        "primary-container": "#0f766e",
+                        "surface-bright": "#f7faf8",
+                        "on-secondary-fixed-variant": "#004395",
+                        "surface-tint": "#006a63",
+                        "primary": "#005c55",
+                        "inverse-on-surface": "#eef1f0",
+                        "on-tertiary-container": "#ffe5db",
+                        "on-tertiary-fixed-variant": "#72361b",
+                        "surface-variant": "#e0e3e1",
+                        "primary-fixed-dim": "#80d5cb",
+                        "surface": "#f7faf8",
+                        "slate-text": "#0F172A",
+                        "surface-container-low": "#f1f4f3",
+                        "on-error-container": "#93000a",
+                        "outline": "#6e7977",
+                        "on-tertiary": "#ffffff",
+                        "on-secondary-container": "#fefcff",
+                        "on-surface": "#181c1c",
+                        "on-primary-fixed-variant": "#00504a",
+                        "error": "#ba1a1a",
+                        "surface-dim": "#d7dbd9",
+                        "tertiary-fixed-dim": "#ffb598",
+                        "background": "#f7faf8",
+                        "surface-glass": "rgba(255, 255, 255, 0.7)",
+                        "on-primary-fixed": "#00201d",
+                        "secondary": "#0058be",
+                        "error-container": "#ffdad6",
+                        "on-secondary": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "1.5rem",
+                        "stack-sm": "0.5rem",
+                        "stack-lg": "2rem",
+                        "stack-md": "1rem",
+                        "container-max": "1280px",
+                        "section-padding": "5rem"
+                    },
+                    "fontFamily": {
+                        "label-md": ["Inter"],
+                        "display-lg": ["Manrope"],
+                        "headline-lg-mobile": ["Manrope"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Manrope"],
+                        "headline-lg": ["Manrope"],
+                        "label-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "label-md": ["14px", { "lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600" }],
+                        "display-lg": ["48px", { "lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800" }],
+                        "headline-lg-mobile": ["24px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "body-lg": ["18px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-md": ["16px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "fontWeight": "700" }],
+                        "label-sm": ["12px", { "lineHeight": "1.2", "fontWeight": "500" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+        .hero-gradient {
+            background: radial-gradient(circle at 50% 50%, rgba(156, 242, 232, 0.15) 0%, rgba(247, 250, 248, 0) 70%);
+        }
+        .float-animation {
+            animation: floating 3s ease-in-out infinite;
+        }
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface selection:bg-primary/20">
+<!-- TopAppBar -->
+<header class="bg-surface-glass backdrop-blur-xl border-b border-outline-variant/30 shadow-sm sticky top-0 z-50">
+<div class="flex justify-between items-center w-full px-gutter max-w-container-max mx-auto h-16">
+<div class="font-headline-md text-headline-md font-bold text-primary">Cardio Risk Predictor</div>
+<nav class="hidden md:flex items-center gap-8">
+<a class="font-label-md text-label-md text-primary font-bold border-b-2 border-primary pb-1" href="#">Home</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Assessment</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">Insights</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-primary transition-colors" href="#">History</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary hover:bg-surface-container-low/50 p-2 rounded-lg transition-all" data-icon="account_circle">account_circle</button>
+</div>
+</div>
+</header>
+<main>
+<!-- Hero Section -->
+<section class="relative hero-gradient overflow-hidden pt-12 md:pt-20 pb-20 md:pb-32">
+<div class="max-w-container-max mx-auto px-gutter grid grid-cols-1 md:grid-cols-12 gap-12 items-center">
+<!-- Left Content -->
+<div class="md:col-span-6 flex flex-col items-start gap-8">
+<div class="space-y-4">
+<h1 class="font-display-lg text-display-lg text-slate-text max-w-lg">
+                            Predict Cardiovascular Risk in <span class="text-primary">Seconds</span>
+</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md">
+                            Advanced AI screening that analyzes your vitals and lifestyle habits to provide medical-grade heart health intelligence instantly.
+                        </p>
+</div>
+<div class="flex flex-wrap gap-4">
+<button class="bg-secondary text-on-secondary px-8 py-4 rounded-lg font-label-md text-label-md hover:shadow-lg active:scale-95 transition-all">
+                            Start Assessment
+                        </button>
+<button class="bg-surface border border-outline-variant text-primary px-8 py-4 rounded-lg font-label-md text-label-md hover:bg-surface-container-low transition-all">
+                            View Demo
+                        </button>
+</div>
+<!-- Trust Row -->
+<div class="pt-8 flex flex-col gap-4">
+<p class="font-label-sm text-label-sm text-outline uppercase tracking-wider">Trusted by healthcare professionals</p>
+<div class="flex items-center gap-8 opacity-60">
+<span class="font-headline-md text-headline-md text-on-surface font-bold tracking-tighter">MEDCORE</span>
+<span class="font-headline-md text-headline-md text-on-surface font-bold tracking-tighter">VITALIS</span>
+<span class="font-headline-md text-headline-md text-on-surface font-bold tracking-tighter">BIOSTATS</span>
+</div>
+</div>
+</div>
+<!-- Right Visuals -->
+<div class="md:col-span-6 relative flex justify-center items-center">
+<div class="relative w-full max-w-[500px] aspect-square flex items-center justify-center">
+<img alt="AI Heart Visualization" class="w-full h-full object-contain rounded-xl z-0" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDnFm0B66vLO0raYyL9znnnh3h18YkmSkqSmi94wtm3ZmAPi1ojhBoEUWS8nbdUl8mjguUfaxig_cQoAdsLqSIirf_EPbqpFpoG0_WOvjIVTnDmDp88UrbddIZyxEqPRhsN1drKMWVIjOkgI_qhGVFXWEoBs7jt6sgCxv4O4-n-7lnyzufcT9NbAqkuaQXQvtOav-qyhfwrqaQ5zjyper2-Lj3TUbHJ7DPoQykBAx7nGurcwmbxp4tzwrGn9x5Hxa2l2YMhyvlEgNQ"/>
+<!-- Floating Cards -->
+<div class="absolute -top-4 -left-8 glass-panel p-4 rounded-xl shadow-xl float-animation z-10" style="animation-delay: 0.2s;">
+<p class="font-label-sm text-label-sm text-outline">BMI</p>
+<p class="font-headline-md text-headline-md text-primary">24.5</p>
+</div>
+<div class="absolute top-1/4 -right-12 glass-panel p-4 rounded-xl shadow-xl float-animation z-10" style="animation-delay: 0.8s;">
+<p class="font-label-sm text-label-sm text-outline">Risk Profile</p>
+<span class="bg-risk-low/20 text-risk-low px-2 py-1 rounded text-[10px] font-bold uppercase">Low</span>
+</div>
+<div class="absolute bottom-8 -left-12 glass-panel p-4 rounded-xl shadow-xl float-animation z-10" style="animation-delay: 1.5s;">
+<p class="font-label-sm text-label-sm text-outline">BP Level</p>
+<p class="font-headline-md text-headline-md text-on-surface">120/80</p>
+</div>
+<div class="absolute -bottom-4 right-0 glass-panel p-4 rounded-xl shadow-xl float-animation z-10" style="animation-delay: 0.5s;">
+<p class="font-label-sm text-label-sm text-outline">Pulse Pressure</p>
+<p class="font-headline-md text-headline-md text-secondary">40 <span class="text-sm">mmHg</span></p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Feature Grid (Bento Style) -->
+<section class="py-section-padding bg-surface">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="text-center mb-16 space-y-4">
+<h2 class="font-headline-lg text-headline-lg text-slate-text">Engineered for Accuracy</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Built on extensive medical datasets and predictive AI models.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 gap-stack-lg">
+<div class="md:col-span-2 bg-surface-container-low p-8 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-all group">
+<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary" data-icon="bolt">bolt</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Real-time Prediction</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Instant risk score generation as you input your health data, allowing for immediate feedback and awareness.</p>
+</div>
+<div class="md:col-span-2 bg-surface-container-low p-8 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-all group">
+<div class="w-12 h-12 bg-secondary/10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-secondary" data-icon="functions">functions</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Auto-calculated Metrics</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Automatically derives BMI, Pulse Pressure, and Mean Arterial Pressure from basic physiological inputs.</p>
+</div>
+<div class="md:col-span-2 bg-surface-container-low p-8 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-all group">
+<div class="w-12 h-12 bg-tertiary-container/10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-tertiary" data-icon="verified_user">verified_user</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Smart Validation</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Inbuilt sanity checks prevent erroneous data entry, ensuring the highest reliability of results.</p>
+</div>
+<div class="md:col-span-2 bg-surface-container-low p-8 rounded-xl border border-outline-variant/30 hover:border-primary/50 transition-all group">
+<div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-primary" data-icon="psychology">psychology</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface mb-2">Explainable Insights</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Our AI doesn't just give a number; it explains which factors contributed most to your risk profile.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- How It Works (Step Flow) -->
+<section class="py-section-padding bg-surface-container-lowest">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="flex flex-col md:flex-row gap-12 items-center">
+<div class="md:w-1/3">
+<h2 class="font-headline-lg text-headline-lg text-slate-text mb-6">Simple 3-Step Analysis</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8">Comprehensive heart health screening that fits into your daily routine.</p>
+<button class="bg-primary text-on-primary px-6 py-3 rounded-lg font-label-md text-label-md">Learn the Methodology</button>
+</div>
+<div class="md:w-2/3 grid grid-cols-1 md:grid-cols-3 gap-8">
+<div class="relative p-6 bg-white rounded-xl shadow-sm border border-outline-variant/20">
+<div class="text-primary/20 text-6xl font-bold absolute top-2 right-4">01</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mt-8 mb-4">Data Input</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Provide age, BMI, blood pressure, and key lifestyle markers.</p>
+</div>
+<div class="relative p-6 bg-white rounded-xl shadow-sm border border-outline-variant/20">
+<div class="text-primary/20 text-6xl font-bold absolute top-2 right-4">02</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mt-8 mb-4">AI Analysis</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Our specialized models process your vitals against clinical benchmarks.</p>
+</div>
+<div class="relative p-6 bg-white rounded-xl shadow-sm border border-outline-variant/20">
+<div class="text-primary/20 text-6xl font-bold absolute top-2 right-4">03</div>
+<h4 class="font-headline-md text-headline-md text-on-surface mt-8 mb-4">Risk Guidance</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Receive an actionable report and recommended next steps.</p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust & Security -->
+<section class="py-section-padding">
+<div class="max-w-container-max mx-auto px-gutter grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+<div class="order-2 md:order-1">
+<div class="relative rounded-2xl overflow-hidden shadow-2xl">
+<img alt="Secure Healthcare Tech" class="w-full h-[400px] object-cover" data-alt="A highly detailed close-up of a modern medical professional's hands interacting with a transparent holographic data interface. The interface glows with soft teal and white data points and encrypted patterns. The lighting is clinical and bright, reinforcing a sterile, secure light-mode aesthetic. The background is a blurred, high-end hospital corridor in pristine white and slate tones." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD40srEUhZ34ebGN6Aat-OhN_Nhu6Su2ceMC9TZQDdKzkLn6e3jbETeyoRFI4vCppMnROXNmMW7qlIl4cfs63rMR_vnd8HTlPivKtSCpTTUziAZQnLUKftlVhG57NpyvUaHbOykj2zHdbDk3s9VsSmiB-qN3vL1s_0G96VY1mpStuJUHPhHx6lD_FBB8LJ5CbFk8wVHDHvE1USYr4g9INQ_B7hQJLKnVTVZskeGS0FEWPshFho7SQAPIjf5lvD9Z4yxt4Lf7aJqJV8"/>
+<div class="absolute inset-0 bg-gradient-to-t from-slate-text/60 to-transparent"></div>
+</div>
+</div>
+<div class="order-1 md:order-2 space-y-8">
+<h2 class="font-headline-lg text-headline-lg text-slate-text">Medical Grade Reliability &amp; Privacy</h2>
+<div class="space-y-6">
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary shrink-0" data-icon="lock_person">lock_person</span>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface">Secure Access</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Multi-factor authentication and encrypted data transmission protect your sensitive health records.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary shrink-0" data-icon="policy">policy</span>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface">Data Privacy</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Full HIPAA compliance ensures your data is never shared without explicit clinical consent.</p>
+</div>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary shrink-0" data-icon="medical_services">medical_services</span>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface">Medical Reliability</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Our algorithms are regularly validated by cardiology experts and updated with new clinical research.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Assessment Preview (Split Layout) -->
+<section class="py-section-padding bg-surface-container-low">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="flex flex-col lg:flex-row gap-12">
+<!-- Form Side -->
+<div class="lg:w-2/3 bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-outline-variant/20">
+<h3 class="font-headline-lg text-headline-lg text-slate-text mb-8">Cardio Assessment</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface">Age</label>
+<input class="w-full p-3 rounded-lg border border-outline focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-surface" placeholder="e.g., 45" type="number"/>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface">Height (cm)</label>
+<input class="w-full p-3 rounded-lg border border-outline focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-surface" placeholder="e.g., 175" type="number"/>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface">Systolic BP</label>
+<input class="w-full p-3 rounded-lg border border-outline focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-surface" placeholder="e.g., 120" type="number"/>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface">Diastolic BP</label>
+<input class="w-full p-3 rounded-lg border border-outline focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all bg-surface" placeholder="e.g., 80" type="number"/>
+</div>
+<div class="md:col-span-2 space-y-4">
+<label class="font-label-md text-label-md text-on-surface">Lifestyle Factors</label>
+<div class="flex flex-wrap gap-3">
+<button class="px-6 py-2 rounded-full border border-primary bg-primary/10 text-primary font-label-sm text-label-sm">Non-smoker</button>
+<button class="px-6 py-2 rounded-full border border-outline text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container transition-all">Active Lifestyle</button>
+<button class="px-6 py-2 rounded-full border border-outline text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container transition-all">Low Stress</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Live Insight Sidebar -->
+<div class="lg:w-1/3 flex flex-col gap-6">
+<div class="glass-panel p-8 rounded-2xl shadow-xl space-y-8 flex-1">
+<h4 class="font-label-md text-label-md text-primary uppercase tracking-widest">Live Metrics</h4>
+<div class="space-y-6">
+<div class="flex justify-between items-center pb-4 border-b border-outline-variant/30">
+<span class="font-body-md text-body-md text-on-surface-variant">BMI</span>
+<span class="font-headline-md text-headline-md text-on-surface font-bold">24.5</span>
+</div>
+<div class="flex justify-between items-center pb-4 border-b border-outline-variant/30">
+<span class="font-body-md text-body-md text-on-surface-variant">Pulse Pressure</span>
+<span class="font-headline-md text-headline-md text-secondary font-bold">40</span>
+</div>
+<div class="flex justify-between items-center pb-4 border-b border-outline-variant/30">
+<span class="font-body-md text-body-md text-on-surface-variant">MAP</span>
+<span class="font-headline-md text-headline-md text-on-surface font-bold">93.3</span>
+</div>
+</div>
+<div class="bg-risk-low/10 p-4 rounded-xl flex items-center gap-3">
+<span class="material-symbols-outlined text-risk-low" data-icon="check_circle">check_circle</span>
+<span class="font-label-md text-label-md text-risk-low">Currently within healthy ranges</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Result Preview Section -->
+<section class="py-section-padding bg-surface">
+<div class="max-w-container-max mx-auto px-gutter">
+<div class="bg-white p-8 md:p-12 rounded-3xl border border-outline-variant/20 shadow-lg overflow-hidden relative">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+<div class="space-y-8">
+<div class="inline-flex items-center gap-2 bg-risk-low/10 text-risk-low px-4 py-2 rounded-full font-label-md text-label-md">
+<span class="material-symbols-outlined" data-icon="shield_moon">shield_moon</span>
+                                Assessment Complete
+                            </div>
+<h3 class="font-headline-lg text-headline-lg text-slate-text">Your Cardiac Health Summary</h3>
+<p class="font-body-md text-body-md text-on-surface-variant">Based on your clinical markers, your 10-year risk of cardiovascular event is categorized as <strong>minimal</strong>.</p>
+<table class="w-full text-left">
+<thead class="border-b border-outline-variant/30">
+<tr>
+<th class="py-4 font-label-md text-label-md text-on-surface">Marker</th>
+<th class="py-4 font-label-md text-label-md text-on-surface text-right">Observation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="border-b border-outline-variant/10">
+<td class="py-4 font-body-md text-body-md text-on-surface-variant">Blood Pressure</td>
+<td class="py-4 font-body-md text-body-md text-on-surface text-right">Optimal</td>
+</tr>
+<tr class="border-b border-outline-variant/10">
+<td class="py-4 font-body-md text-body-md text-on-surface-variant">Weight Management</td>
+<td class="py-4 font-body-md text-body-md text-on-surface text-right">In-Range</td>
+</tr>
+<tr class="border-b border-outline-variant/10">
+<td class="py-4 font-body-md text-body-md text-on-surface-variant">Lifestyle Balance</td>
+<td class="py-4 font-body-md text-body-md text-on-surface text-right">Excellent</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="flex flex-col items-center justify-center p-12 bg-surface-container-low rounded-2xl relative">
+<!-- Circular Gauge Placeholder (SVG) -->
+<div class="relative w-64 h-64">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="transparent" r="45" stroke="#e2e8f0" stroke-width="8"></circle>
+<circle cx="50" cy="50" fill="transparent" r="45" stroke="#006a63" stroke-dasharray="282.7" stroke-dashoffset="240" stroke-linecap="round" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center rotate-90">
+<span class="font-display-lg text-display-lg text-primary">12%</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">TOTAL RISK</span>
+</div>
+</div>
+<div class="mt-8 text-center">
+<span class="bg-risk-low text-white px-6 py-2 rounded-full font-label-md text-label-md">LOW RISK CATEGORY</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Auth CTA Strip -->
+<section class="py-12 bg-primary">
+<div class="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center gap-8">
+<div class="text-on-primary">
+<h3 class="font-headline-md text-headline-md mb-2">Join 12,000+ users monitoring their heart health.</h3>
+<p class="font-body-md text-body-md opacity-80">Take the first step toward preventive cardiac care today.</p>
+</div>
+<div class="flex gap-4">
+<button class="bg-surface text-primary px-8 py-3 rounded-lg font-label-md text-label-md hover:bg-surface-bright transition-all">Sign In</button>
+<button class="bg-secondary text-on-secondary px-8 py-3 rounded-lg font-label-md text-label-md hover:shadow-lg transition-all">Create Account</button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-surface-container-low border-t border-outline-variant/20">
+<div class="w-full py-section-padding px-gutter max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-stack-md">
+<div class="space-y-4 text-center md:text-left">
+<div class="font-headline-md text-headline-md font-bold text-primary">Cardio Risk Predictor</div>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-xs">AI-driven cardiovascular intelligence for clinical and personal health screening.</p>
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 bg-risk-low rounded-full animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-tighter">Model Status: Online</span>
+</div>
+</div>
+<nav class="flex flex-wrap justify-center gap-x-12 gap-y-4">
+<div class="flex flex-col gap-4">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">Terms of Service</a>
+</div>
+<div class="flex flex-col gap-4">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">HIPAA Compliance</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-primary transition-colors" href="#">API Status</a>
+</div>
+</nav>
+<div class="text-center md:text-right">
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 Cardio Risk Predictor AI. All rights reserved.</p>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions and hover effects
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.classList.add('scale-95');
+            });
+            button.addEventListener('mouseup', () => {
+                button.classList.remove('scale-95');
+            });
+            button.addEventListener('mouseleave', () => {
+                button.classList.remove('scale-95');
+            });
+        });
+
+        // Simple Fade-in animation for scroll
+        const observerOptions = {
+            threshold: 0.1
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('opacity-100', 'translate-y-0');
+                    entry.target.classList.remove('opacity-0', 'translate-y-8');
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            section.classList.add('transition-all', 'duration-700', 'opacity-0', 'translate-y-8');
+            observer.observe(section);
+        });
+    </script>
+</body></html>

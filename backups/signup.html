@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Sign Up | Cardio Risk Predictor</title>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary-fixed": "#ffdbce",
+                    "on-primary": "#ffffff",
+                    "surface-dim": "#d7dbd9",
+                    "surface-glass": "rgba(255, 255, 255, 0.7)",
+                    "on-primary-container": "#a3faef",
+                    "surface-container-lowest": "#ffffff",
+                    "surface-tint": "#006a63",
+                    "inverse-on-surface": "#eef1f0",
+                    "tertiary-fixed-dim": "#ffb598",
+                    "secondary": "#0058be",
+                    "on-primary-fixed-variant": "#00504a",
+                    "on-surface": "#181c1c",
+                    "primary-container": "#0f766e",
+                    "surface-bright": "#f7faf8",
+                    "risk-low": "#10B981",
+                    "inverse-surface": "#2d3130",
+                    "on-secondary-container": "#fefcff",
+                    "background": "#f7faf8",
+                    "risk-high": "#EF4444",
+                    "on-error-container": "#93000a",
+                    "on-tertiary-fixed-variant": "#72361b",
+                    "on-secondary": "#ffffff",
+                    "surface-container-high": "#e5e9e7",
+                    "outline": "#6e7977",
+                    "error-container": "#ffdad6",
+                    "outline-variant": "#bdc9c6",
+                    "surface-container": "#ebefed",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#7f4025",
+                    "on-secondary-fixed-variant": "#004395",
+                    "on-primary-fixed": "#00201d",
+                    "slate-text": "#0F172A",
+                    "on-tertiary-fixed": "#370e00",
+                    "error": "#ba1a1a",
+                    "on-background": "#181c1c",
+                    "inverse-primary": "#80d5cb",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "surface-variant": "#e0e3e1",
+                    "primary-fixed-dim": "#80d5cb",
+                    "on-secondary-fixed": "#001a42",
+                    "surface-container-highest": "#e0e3e1",
+                    "primary-fixed": "#9cf2e8",
+                    "on-surface-variant": "#3e4947",
+                    "tertiary-container": "#9c573a",
+                    "on-error": "#ffffff",
+                    "surface-container-low": "#f1f4f3",
+                    "on-tertiary-container": "#ffe5db",
+                    "surface": "#f7faf8",
+                    "secondary-container": "#2170e4",
+                    "secondary-fixed": "#d8e2ff",
+                    "primary": "#005c55"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "section-padding": "5rem",
+                    "stack-md": "1rem",
+                    "stack-sm": "0.5rem",
+                    "container-max": "1280px",
+                    "stack-lg": "2rem",
+                    "gutter": "1.5rem"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Manrope"],
+                    "headline-lg-mobile": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "body-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Manrope"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "label-md": ["14px", {"lineHeight": "1.2", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1.2", "fontWeight": "500"}],
+                    "body-md": ["16px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+        .animate-float {
+            animation: float 6s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+            100% { transform: translateY(0px); }
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen selection:bg-primary-fixed selection:text-on-primary-fixed">
+<main class="flex min-h-screen">
+<!-- Left Side: Professional Hero Graphic (Asymmetric Split) -->
+<section class="hidden lg:flex lg:w-1/2 relative overflow-hidden bg-primary-container">
+<!-- Decorative Elements -->
+<div class="absolute inset-0 opacity-20 pointer-events-none">
+<div class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-primary-fixed rounded-full blur-3xl"></div>
+<div class="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-secondary-fixed rounded-full blur-3xl"></div>
+</div>
+<div class="relative z-10 flex flex-col justify-center px-16 text-on-primary-container">
+<div class="mb-stack-lg">
+<span class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-primary-fixed border border-white/20 font-label-sm text-label-sm mb-4">
+<span class="material-symbols-outlined text-[18px]">verified_user</span>
+                        CLINICAL GRADE AI ENGINE
+                    </span>
+<h1 class="font-display-lg text-display-lg leading-tight mb-4 text-white">
+                        Precision Analytics for <span class="text-primary-fixed">Heart Longevity.</span>
+</h1>
+<p class="font-body-lg text-body-lg text-white/80 max-w-md">
+                        Join thousands of health-conscious individuals using Vitalis Intelligence to monitor cardiovascular risk factors with scientific rigor.
+                    </p>
+</div>
+<!-- Floating Data Card (Visual Anchor) -->
+<div class="glass-panel p-6 rounded-xl border border-white/20 shadow-2xl max-w-sm animate-float">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary">analytics</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-slate-text">Real-time Insights</p>
+<p class="text-[10px] text-outline font-medium">LATEST MODEL: V4.2</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-primary-container">more_vert</span>
+</div>
+<div class="space-y-3">
+<div class="h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-primary w-2/3 rounded-full"></div>
+</div>
+<div class="flex justify-between text-label-sm font-label-sm text-on-surface-variant">
+<span>Processing markers...</span>
+<span class="text-primary">67% Complete</span>
+</div>
+</div>
+</div>
+<div class="mt-20 flex items-center gap-6">
+<img alt="Clinical Analytics" class="w-48 h-32 object-cover rounded-lg shadow-lg border border-white/10 grayscale-[0.2]" data-alt="A professional close-up shot of a modern medical interface on a high-resolution tablet, displaying heart rate graphs and AI data points. The lighting is bright and clean with a cool clinical tone, dominated by soft blues and hospital whites. A healthcare professional's hand is visible, suggesting a collaborative human-AI diagnostic environment in a premium medical facility." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCddlIXSkOJec80bjTfb5fj5AxOROygddryl7P8Vv5NWjq_gqWw7YWh_4U1MGXuGnUTEl240OIHwfD9aerc-aNxF6RBpBLhsT_6Dbp6w7ZGEq1T6z5nZzrJ48KbMcHXZcrnMbeZbFbcLfqq6rBeqzAOnacuHzJExqyVbwlVKNyXN_zqYpnhpL1M-BOB1HF_HRhzLXoHTrzKBWYfAqABVl11UqDw7gPI4pyorLEqfFT1nvFzdExA6T0sfy-WJJi2DFZqQklbWH5EEJk"/>
+<div class="space-y-1">
+<div class="flex gap-1 text-primary-fixed">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-label-sm text-label-sm text-white/70 italic">"The most comprehensive risk predictor available to consumers today."</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Right Side: Sign Up Form -->
+<section class="w-full lg:w-1/2 flex items-center justify-center p- gutter md:p-12 lg:p-20">
+<div class="w-full max-w-[480px]">
+<!-- Mobile Branding -->
+<div class="lg:hidden mb-stack-lg flex items-center gap-2">
+<div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center text-white">
+<span class="material-symbols-outlined">health_and_safety</span>
+</div>
+<span class="font-headline-md text-headline-md font-extrabold text-primary tracking-tight">Cardio Risk Predictor</span>
+</div>
+<div class="mb-stack-lg">
+<h2 class="font-headline-lg text-headline-lg lg:text-headline-lg text-on-surface mb-2">Create your account</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                        Start your personalized cardiovascular health journey with AI-assisted screening.
+                    </p>
+</div>
+<form class="space-y-5" onsubmit="return false">
+<!-- Full Name -->
+<div class="space-y-1.5">
+<label class="font-label-md text-label-md text-on-surface-variant" for="name">Full Name</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">person</span>
+<input class="w-full pl-11 pr-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 outline-none placeholder:text-outline/60" id="name" placeholder="John Doe" type="text"/>
+</div>
+</div>
+<!-- Email -->
+<div class="space-y-1.5">
+<label class="font-label-md text-label-md text-on-surface-variant" for="email">Email Address</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">mail</span>
+<input class="w-full pl-11 pr-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 outline-none placeholder:text-outline/60" id="email" placeholder="name@company.com" type="email"/>
+</div>
+</div>
+<!-- Password Group -->
+<div class="space-y-1.5">
+<label class="font-label-md text-label-md text-on-surface-variant" for="password">Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">lock</span>
+<input class="w-full pl-11 pr-12 py-3 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 outline-none" id="password" placeholder="••••••••" type="password"/>
+<button class="absolute right-4 top-1/2 -translate-y-1/2 text-outline hover:text-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+<!-- Password Strength Indicator -->
+<div class="pt-1.5 space-y-2">
+<div class="flex gap-1.5 h-1">
+<div class="flex-1 bg-primary rounded-full"></div>
+<div class="flex-1 bg-primary rounded-full"></div>
+<div class="flex-1 bg-outline-variant rounded-full"></div>
+<div class="flex-1 bg-outline-variant rounded-full"></div>
+</div>
+<div class="flex items-center gap-1.5 text-label-sm font-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-risk-low">check_circle</span>
+<span>Password strength: <strong class="text-on-surface">Moderate</strong></span>
+</div>
+</div>
+</div>
+<!-- Confirm Password -->
+<div class="space-y-1.5">
+<label class="font-label-md text-label-md text-on-surface-variant" for="confirm_password">Confirm Password</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline text-[20px]">lock_reset</span>
+<input class="w-full pl-11 pr-4 py-3 bg-surface-container-low border border-outline-variant rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-all duration-200 outline-none" id="confirm_password" placeholder="••••••••" type="password"/>
+</div>
+</div>
+<!-- CTA Button -->
+<div class="pt-4">
+<button class="w-full bg-primary hover:bg-primary/90 text-on-primary font-label-md text-label-md py-4 rounded-xl shadow-md transition-all active:scale-[0.98] flex items-center justify-center gap-2 group">
+                            Create Account
+                            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</button>
+</div>
+<!-- Security Reassurance -->
+<div class="flex items-center justify-center gap-2 p-3 bg-surface-container-high/50 rounded-lg">
+<span class="material-symbols-outlined text-primary text-[18px]" style="font-variation-settings: 'FILL' 1;">encrypted</span>
+<p class="text-label-sm font-label-sm text-on-surface-variant">
+                            Your data is encrypted and secure
+                        </p>
+</div>
+<div class="text-center pt-2">
+<p class="font-body-md text-body-md text-on-surface-variant">
+                            Already have an account? 
+                            <a class="text-primary font-bold hover:underline ml-1" href="#">Sign In</a>
+</p>
+</div>
+</form>
+<!-- Terms Footer -->
+<footer class="mt-12 pt-6 border-t border-outline-variant/30 text-center">
+<p class="font-label-sm text-label-sm text-outline">
+                        By signing up, you agree to our 
+                        <a class="text-on-surface hover:text-primary underline" href="#">Scientific Methodology</a> and 
+                        <a class="text-on-surface hover:text-primary underline" href="#">Privacy Policy</a>.
+                    </p>
+</footer>
+</div>
+</section>
+</main>
+<script>
+        // Micro-interaction for password strength visualization (demo logic)
+        const passwordInput = document.getElementById('password');
+        const strengthBars = document.querySelectorAll('.h-1 > div');
+        
+        passwordInput.addEventListener('input', (e) => {
+            const val = e.target.value;
+            if (val.length === 0) {
+                strengthBars.forEach(bar => {
+                    bar.className = 'flex-1 bg-outline-variant rounded-full';
+                });
+            } else if (val.length < 6) {
+                strengthBars[0].className = 'flex-1 bg-risk-high rounded-full';
+                strengthBars[1].className = 'flex-1 bg-outline-variant rounded-full';
+                strengthBars[2].className = 'flex-1 bg-outline-variant rounded-full';
+                strengthBars[3].className = 'flex-1 bg-outline-variant rounded-full';
+            } else if (val.length < 10) {
+                strengthBars[0].className = 'flex-1 bg-primary rounded-full';
+                strengthBars[1].className = 'flex-1 bg-primary rounded-full';
+                strengthBars[2].className = 'flex-1 bg-outline-variant rounded-full';
+                strengthBars[3].className = 'flex-1 bg-outline-variant rounded-full';
+            } else {
+                strengthBars.forEach(bar => {
+                    bar.className = 'flex-1 bg-risk-low rounded-full';
+                });
+            }
+        });
+
+        // Toggle Password Visibility
+        document.querySelectorAll('button[type="button"]').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const input = this.previousElementSibling;
+                const icon = this.querySelector('span');
+                if (input.type === 'password') {
+                    input.type = 'text';
+                    icon.textContent = 'visibility_off';
+                } else {
+                    input.type = 'password';
+                    icon.textContent = 'visibility';
+                }
+            });
+        });
+    </script>
+</body></html>
