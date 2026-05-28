@@ -1,0 +1,181 @@
+"use client";
+
+import React, { createContext, useContext, useState, useEffect } from "react";
+
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
+interface User {
+  name: string;
+  email: string;
+}
+
+interface AuthContextType {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  login: (email: string, password?: string) => Promise<void>;
+  signup: (email: string, name: string, password?: string) => Promise<void>;
+  logout: () => Promise<void>;
+}
+
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = localStorage.getItem("cardio_token");
+      if (token) {
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/v1/auth/me`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+          if (res.ok) {
+            const userData = await res.json();
+            const userObj: User = {
+              name: userData.full_name || userData.username,
+              email: userData.email,
+            };
+            setUser(userObj);
+            localStorage.setItem("cardio_user", JSON.stringify(userObj));
+          } else {
+            localStorage.removeItem("cardio_user");
+            localStorage.removeItem("cardio_token");
+            setUser(null);
+          }
+        } catch (e) {
+          console.error("Token verification failed:", e);
+          const storedUser = localStorage.getItem("cardio_user");
+          if (storedUser) {
+            setUser(JSON.parse(storedUser));
+          } else {
+            setUser(null);
+          }
+        }
+      } else {
+        setUser(null);
+      }
+      setIsLoading(false);
+    };
+    checkAuth();
+  }, []);
+
+  const login = async (email: string, password?: string) => {
+    setIsLoading(true);
+    try {
+      const formData = new URLSearchParams();
+      formData.append("username", email);
+      formData.append("password", password || "");
+
+      const res = await fetch(`${API_BASE_URL}/api/v1/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.detail || "Incorrect username/email or password.");
+      }
+
+      const data = await res.json();
+      localStorage.setItem("cardio_token", data.access_token);
+
+      const userObj: User = {
+        name: data.username,
+        email: email,
+      };
+      setUser(userObj);
+      localStorage.setItem("cardio_user", JSON.stringify(userObj));
+    } catch (err: any) {
+      console.error("Sign in failed:", err);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const signup = async (email: string, name: string, password?: string) => {
+    setIsLoading(true);
+    try {
+      // Generate clean alphanumeric + underscore username
+      let username = email.split("@")[0].replace(/[^a-zA-Z0-9_]/g, "");
+      if (username.length < 3) {
+        username += "_usr";
+      }
+
+      const res = await fetch(`${API_BASE_URL}/api/v1/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          username,
+          password: password || "",
+          full_name: name,
+        }),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.detail || "Account registration failed.");
+      }
+
+      const data = await res.json();
+      localStorage.setItem("cardio_token", data.access_token);
+
+      const userObj: User = {
+        name: data.username,
+        email: email,
+      };
+      setUser(userObj);
+      localStorage.setItem("cardio_user", JSON.stringify(userObj));
+    } catch (err: any) {
+      console.error("Sign up failed:", err);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const logout = async () => {
+    setIsLoading(true);
+    try {
+      setUser(null);
+      localStorage.removeItem("cardio_user");
+      localStorage.removeItem("cardio_token");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <AuthContext.Provider
+      value={{
+        user,
+        isAuthenticated: !!user,
+        isLoading,
+        login,
+        signup,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
+}
+
+export function useAuth() {
+  const context = useContext(AuthContext);
+  if (context === undefined) {
+    throw new Error("useAuth must be used within an AuthProvider");
+  }
+  return context;
+}
