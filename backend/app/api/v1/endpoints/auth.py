@@ -8,6 +8,7 @@ import uuid
 
 from app.core import security
 from app.core.dependencies import get_db, get_current_user
+from app.core.config import settings
 from app.db import crud
 from app.schemas import user as user_schemas
 
@@ -87,7 +88,7 @@ def get_me(current_user: user_schemas.UserResponse = Depends(get_current_user)):
 
 @router.post("/google", response_model=user_schemas.AuthResponse)
 def google_auth(auth_in: user_schemas.GoogleAuth, db: Session = Depends(get_db)):
-    client_id = os.getenv("GOOGLE_CLIENT_ID")
+    client_id = settings.GOOGLE_CLIENT_ID
     if not client_id:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,

@@ -45,20 +45,6 @@ def get_dashboard_stats(db: Session = Depends(get_db)) -> DashboardStatsResponse
 
         # 2. Calculate model performance (accuracy per distinct model_name)
         # Using a raw SQL query via db.execute to handle division by zero and CASE statements cleanly
-        model_query = """
-            SELECT 
-                model_name,
-                COUNT(*) as total,
-                SUM(CASE WHEN (prediction = 1 AND risk_probability >= 0.5) 
-                           OR (prediction = 0 AND risk_probability < 0.5) THEN 1 ELSE 0 END) as correct
-            FROM predictions
-            GROUP BY model_name
-        """
-        model_results = db.execute(func.txt(model_query) if hasattr(func, "txt") else db.execute(func.text(model_query))).fetchall() if hasattr(func, "text") else db.execute(model_query).fetchall()
-        
-        # Fallback if execution doesn't fetch direct text query (using SQLAlchemy Core query is safer)
-        # Let's write the query using SQLAlchemy core expressions for maximum compatibility
-        # Or simply db.execute(text(...)) with sqlalchemy import text
         from sqlalchemy import text
         model_results = db.execute(text(
             "SELECT model_name, COUNT(*) as total, "
@@ -140,6 +126,6 @@ def get_dashboard_stats(db: Session = Depends(get_db)) -> DashboardStatsResponse
     except Exception as e:
         logger.error(f"Error serving dashboard stats endpoint: {str(e)}", exc_info=True)
         raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_AVAILABLE,
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
             detail="Database unavailable"
         )
