@@ -10,6 +10,134 @@ function getAuthHeader(): Record<string, string> {
   return {};
 }
 
+// --- Dashboard Typings ---
+
+export interface KPIStats {
+  total_predictions: number;
+  high_risk_count: number;
+  low_risk_count: number;
+  avg_risk_probability: number;
+}
+
+export interface ModelStat {
+  name: string;
+  accuracy: number;
+}
+
+export interface RiskFactor {
+  feature: string;
+  importance: number;
+}
+
+export interface RecentPrediction {
+  id: number;
+  age_years: number;
+  bmi: number;
+  ap_hi: number;
+  ap_lo: number;
+  prediction: number;
+  risk_probability: number;
+  risk_level: string;
+  model_name: string;
+  created_at: string;
+}
+
+export interface DashboardStats {
+  kpis: KPIStats;
+  models: ModelStat[];
+  risk_factors: RiskFactor[];
+  recent: RecentPrediction[];
+}
+
+// --- Prediction Typings ---
+
+export interface PredictRequest {
+  age_years: number;
+  gender: number;
+  height: number;
+  weight: number;
+  ap_hi: number;
+  ap_lo: number;
+  cholesterol: number;
+  gluc: number;
+  smoke: number;
+  alco: number;
+  active: number;
+}
+
+export interface PredictResponse {
+  prediction: number;
+  probability: number;
+  risk_level: string;
+  model_used: string;
+  
+  // UI rendering compat fields
+  risk_percentage: number;
+  risk_label: string;
+  advice: string;
+  bmi: number;
+  bmi_category: string;
+  pulse_pressure: number;
+  pp_hint: string;
+  model_name: string;
+  record_id: number;
+  feature_impacts?: Record<string, number>;
+}
+
+// --- API Methods ---
+
+/**
+ * Fetches real-time prediction analytics and stats from the backend.
+ */
+export async function fetchDashboardStats(): Promise<DashboardStats> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/dashboard/stats`, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader()
+      },
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      const errJson = await response.json().catch(() => ({}));
+      throw new Error(errJson.detail || `Request failed with status ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    throw new Error(error.message || "Failed to connect to dashboard statistics service.");
+  }
+}
+
+/**
+ * Submits patient data for cardiovascular risk prediction.
+ */
+export async function submitPrediction(data: PredictRequest): Promise<PredictResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/v1/predict`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...getAuthHeader()
+      },
+      body: JSON.stringify(data),
+    });
+
+    if (!response.ok) {
+      const errJson = await response.json().catch(() => ({}));
+      throw new Error(errJson.detail || `Request failed with status ${response.status}`);
+    }
+
+    return await response.json();
+  } catch (error: any) {
+    throw new Error(error.message || "Failed to reach the prediction service.");
+  }
+}
+
+// --- Legacy Compatibility Functions ---
+
 let isSubmitting = false;
 
 export async function predictCardioRisk(payload: PredictionPayload): Promise<PredictionResponse> {
@@ -20,29 +148,22 @@ export async function predictCardioRisk(payload: PredictionPayload): Promise<Pre
   isSubmitting = true;
 
   try {
-    // Exclude bmi and pulse_pressure from payload sent to backend
     const { bmi, pulse_pressure, ...backendPayload } = payload as any;
-
-    const response = await fetch(`${API_BASE_URL}/api/v1/predict`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        ...getAuthHeader()
-      },
-      body: JSON.stringify(backendPayload),
-    });
-
-    if (!response.ok) {
-      const errJson = await response.json().catch(() => ({}));
-      throw new Error(errJson.detail || "Server error: Failed to get prediction results.");
-    }
-
-    return await response.json();
-  } catch (error: any) {
-    if (error.message && !error.message.includes("fetch")) {
-      throw error;
-    }
-    throw new Error("Network connection error: Unable to reach the cardiovascular prediction service.");
+    const response = await submitPrediction(backendPayload);
+    
+    // Map PredictResponse to PredictionResponse fields
+    return {
+      prediction: response.prediction,
+      risk_percentage: response.risk_percentage,
+      risk_label: response.risk_label,
+      advice: response.advice,
+      model_name: response.model_name,
+      bmi: response.bmi,
+      bmi_category: response.bmi_category,
+      pulse_pressure: response.pulse_pressure,
+      pp_hint: response.pp_hint,
+      record_id: response.record_id
+    };
   } finally {
     isSubmitting = false;
   }
