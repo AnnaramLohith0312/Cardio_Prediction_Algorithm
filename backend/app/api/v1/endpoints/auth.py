@@ -1,6 +1,11 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
+from google.oauth2 import id_token
+from google.auth.transport import requests
+import os
+import uuid
+
 from app.core import security
 from app.core.dependencies import get_db, get_current_user
 from app.db import crud
@@ -80,3 +85,54 @@ def login(
 def get_me(current_user: user_schemas.UserResponse = Depends(get_current_user)):
     return current_user
 
+@router.post("/google", response_model=user_schemas.AuthResponse)
+def google_auth(auth_in: user_schemas.GoogleAuth, db: Session = Depends(get_db)):
+    client_id = os.getenv("GOOGLE_CLIENT_ID")
+    if not client_id:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Google Client ID is not configured on the server."
+        )
+
+    try:
+        # Verify the token
+        idinfo = id_token.verify_oauth2_token(auth_in.credential, requests.Request(), client_id)
+
+        # Ensure it's a valid issuer
+        if idinfo['iss'] not in ['accounts.google.com', 'https://accounts.google.com']:
+            raise ValueError('Wrong issuer.')
+
+        email = idinfo['email']
+        name = idinfo.get('name', '')
+        
+        # Check if user exists
+        user = crud.get_user_by_email(db, email=email)
+        
+        if not user:
+            # Create a new user automatically
+            # Generate a random username and password for oauth users
+            random_suffix = str(uuid.uuid4())[:8]
+            username = f"user_{random_suffix}"
+            random_password = str(uuid.uuid4())
+            
+            user = crud.create_user(
+                db,
+                email=email,
+                username=username,
+                password_plain=random_password,
+                full_name=name
+            )
+
+        return {
+            "access_token": security.create_access_token(subject=user.email),
+            "refresh_token": security.create_refresh_token(subject=user.email),
+            "token_type": "bearer",
+            "user_id": user.id,
+            "username": user.username
+        }
+    except ValueError as e:
+        # Invalid token
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail=f"Invalid Google token: {str(e)}"
+        )

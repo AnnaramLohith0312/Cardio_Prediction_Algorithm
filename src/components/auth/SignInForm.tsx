@@ -1,26 +1,68 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
+import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "@/hooks/useAuth";
 
 export default function SignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { login } = useAuth();
+  const { login, loginWithGoogle } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const savedEmail = localStorage.getItem("cardio_remembered_email");
+    if (savedEmail) {
+      setEmail(savedEmail);
+      setRememberMe(true);
+    }
+  }, []);
+
+  const handleGoogleSuccess = async (credentialResponse: any) => {
+    if (credentialResponse.credential) {
+      try {
+        await loginWithGoogle(credentialResponse.credential);
+        const redirectUrl = searchParams.get("redirect") || "/assessment";
+        router.push(redirectUrl);
+      } catch (err: any) {
+        setError(err.message || "Google Sign-In failed on server.");
+      }
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
+
+    // Client-side validation
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Please enter a valid email address.");
+      setLoading(false);
+      return;
+    }
+    if (!password || password.length < 6) {
+      setError("Password must be at least 6 characters.");
+      setLoading(false);
+      return;
+    }
+
     try {
       await login(email, password);
+      // Remember me logic
+      if (rememberMe) {
+        localStorage.setItem("cardio_remembered_email", email);
+      } else {
+        localStorage.removeItem("cardio_remembered_email");
+      }
+      
       const redirectUrl = searchParams.get("redirect") || "/assessment";
       router.push(redirectUrl);
     } catch (err: any) {
@@ -60,9 +102,13 @@ export default function SignInForm() {
             <label className="font-label-md text-xs font-semibold text-on-surface-variant" htmlFor="password">
               Password
             </label>
-            <a className="font-label-sm text-xs text-primary hover:text-primary-container transition-colors" href="#">
+            <button 
+              type="button"
+              className="font-label-sm text-xs text-primary hover:text-primary-container transition-colors cursor-pointer" 
+              onClick={() => alert("Password reset functionality will be implemented soon. Please contact the administrator.")}
+            >
               Forgot password?
-            </a>
+            </button>
           </div>
           <div className="relative group">
             <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-primary transition-colors">
@@ -94,6 +140,8 @@ export default function SignInForm() {
             className="w-4 h-4 rounded border-outline-variant text-primary focus:ring-primary/30 transition-all cursor-pointer"
             id="remember"
             type="checkbox"
+            checked={rememberMe}
+            onChange={(e) => setRememberMe(e.target.checked)}
           />
           <label className="font-label-sm text-xs text-on-surface-variant cursor-pointer select-none" htmlFor="remember">
             Remember me for 30 days
@@ -135,11 +183,17 @@ export default function SignInForm() {
         </div>
       </div>
       {/* OAuth Social */}
-      <div className="grid grid-cols-1 gap-4">
-        <button className="flex items-center justify-center gap-3 w-full py-3 px-4 border border-outline-variant rounded-lg bg-white/50 hover:bg-surface-container-high transition-colors font-label-md text-sm font-semibold text-on-surface cursor-pointer">
-          <span className="material-symbols-outlined text-primary text-xl">google</span>
-          Google
-        </button>
+      <div className="flex justify-center mt-4">
+        <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={() => setError("Google Sign-In was unsuccessful. Please try again.")}
+          useOneTap
+          shape="rectangular"
+          theme="outline"
+          size="large"
+          text="signin_with"
+          width="100%"
+        />
       </div>
       {/* Footnote */}
       <div className="mt-8 text-center">

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { createContext, useContext, useState, useEffect } from "react";
+import { GoogleOAuthProvider } from "@react-oauth/google";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
@@ -14,6 +15,7 @@ interface AuthContextType {
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (email: string, password?: string) => Promise<void>;
+  loginWithGoogle: (credential: string) => Promise<void>;
   signup: (email: string, name: string, password?: string) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -101,6 +103,53 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const loginWithGoogle = async (credential: string) => {
+    setIsLoading(true);
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/auth/google`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ credential }),
+      });
+
+      if (!res.ok) {
+        const errJson = await res.json().catch(() => ({}));
+        throw new Error(errJson.detail || "Google Sign in failed.");
+      }
+
+      const data = await res.json();
+      localStorage.setItem("cardio_token", data.access_token);
+
+      const userObj: User = {
+        name: data.username,
+        // Since we don't return email from auth endpoint directly, we can fetch /me or leave email blank if unused in UI
+        email: "google-user", 
+      };
+      setUser(userObj);
+      localStorage.setItem("cardio_user", JSON.stringify(userObj));
+      
+      // Optionally fetch full user profile to get exact email
+      const meRes = await fetch(`${API_BASE_URL}/api/v1/auth/me`, {
+        headers: { Authorization: `Bearer ${data.access_token}` },
+      });
+      if (meRes.ok) {
+        const meData = await meRes.json();
+        userObj.name = meData.full_name || meData.username;
+        userObj.email = meData.email;
+        setUser(userObj);
+        localStorage.setItem("cardio_user", JSON.stringify(userObj));
+      }
+      
+    } catch (err: any) {
+      console.error("Google Sign in failed:", err);
+      throw err;
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const signup = async (email: string, name: string, password?: string) => {
     setIsLoading(true);
     try {
@@ -157,18 +206,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        isAuthenticated: !!user,
-        isLoading,
-        login,
-        signup,
-        logout,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+    <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID || "YOUR_GOOGLE_CLIENT_ID"}>
+      <AuthContext.Provider
+        value={{
+          user,
+          isAuthenticated: !!user,
+          isLoading,
+          login,
+          loginWithGoogle,
+          signup,
+          logout,
+        }}
+      >
+        {children}
+      </AuthContext.Provider>
+    </GoogleOAuthProvider>
   );
 }
 
