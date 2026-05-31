@@ -3,26 +3,21 @@
 import React from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
+import TopNavBar from "@/components/shared/TopNavBar";
+import Footer from "@/components/shared/Footer";
 
 export default function Home() {
   const router = useRouter();
 
   return (
-    <div className="flex flex-col min-h-screen relative overflow-x-hidden">
-      <style>{`
-        /* Navy Gradient Animation */
-        @keyframes gradient-shift {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
+    <div className="flex flex-col min-h-screen relative overflow-x-hidden bg-background text-on-background selection:bg-teal-accent/30 font-body-main">
+      <style dangerouslySetInnerHTML={{__html: `
+        /* CorMetrics ECG Grid */
+        .ecg-grid {
+          background-size: 40px 40px;
+          background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                            linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
         }
-        .bg-animated-navy {
-          background: radial-gradient(circle at center, var(--surface-color) 0%, var(--bg-color) 100%);
-          background-size: 200% 200%;
-          animation: gradient-shift 15s ease infinite;
-        }
-
         /* ECG Line Animation */
         .ecg-line {
           stroke-dasharray: 2000;
@@ -33,172 +28,201 @@ export default function Home() {
           0% { stroke-dashoffset: 2000; }
           100% { stroke-dashoffset: 0; }
         }
-      `}</style>
+        .glass-panel {
+          background: rgba(28, 32, 32, 0.7);
+          backdrop-filter: blur(12px);
+          border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .grid-overlay { background-size: 40px 40px; background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px); }
+`}} />
 
-      <Navbar />
+      <TopNavBar />
+<main className="flex-grow">
 
-      {/* 2. Full-viewport Hero Section */}
-      <section className="relative min-h-[calc(100vh-5rem)] flex items-center justify-center bg-animated-navy py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {/* ECG Background Animation overlay */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none">
-          <svg className="w-full h-64 text-[var(--interactive-teal)]" viewBox="0 0 1000 200" preserveAspectRatio="none">
-            <path 
-              className="ecg-line"
-              d="M0 100 L 200 100 L 230 40 L 280 170 L 330 20 L 380 180 L 410 100 L 600 100 L 630 60 L 680 150 L 730 30 L 780 190 L 810 100 L 1000 100" 
-              fill="none" 
-              stroke="currentColor" 
-              strokeWidth="4" 
-              strokeLinecap="round" 
-              strokeLinejoin="round" 
-            />
-          </svg>
-        </div>
+{/*  Hero Section  */}
+<section className="relative min-h-[90vh] flex items-center overflow-hidden pt-12">
+<div className="absolute inset-0 grid-overlay z-0"></div>
+<div className="max-w-container-max mx-auto px-margin-desktop grid grid-cols-1 md:grid-cols-12 gap-gutter items-center relative z-10">
+<div className="md:col-span-7 space-y-8">
+<div className="space-y-4 transition-all duration-700 opacity-100 translate-y-0">
+<span className="font-label-caps text-label-caps text-teal-accent tracking-widest block">AI-POWERED CARDIOVASCULAR SCREENING</span>
+<h1 className="font-display-hero text-display-hero md:text-display-hero text-text-primary leading-tight">
+                            Detect heart risk earlier with <br/>
+<span className="text-primary italic">intelligent clinical screening.</span>
+</h1>
+<p className="font-body-main text-body-main text-text-muted max-w-xl">CorMetrics leverages an ensemble ML pipeline to provide precise, clinical-grade cardiovascular risk assessments in seconds. Designed for modern practitioners.</p>
+</div>
+<div className="flex flex-wrap gap-4 pt-4 transition-all duration-700 opacity-100 translate-y-0">
+<button className="bg-teal-accent text-white font-title-card text-title-card px-8 py-4 rounded-xl hover:brightness-110 transition-all shadow-lg shadow-teal-accent/20 flex items-center gap-2">
+                            Start Risk Assessment
+                            <span className="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+</button>
+<button className="border border-border text-text-primary font-title-card text-title-card px-8 py-4 rounded-xl hover:bg-surface-container-high transition-all">
+                            View Dashboard
+                        </button>
+</div>
+</div>
+<div className="md:col-span-5 relative h-[500px] flex items-center justify-center">
+{/*  Cinematic Visual  */}
+<div className="w-full h-full relative glass-panel rounded-2xl overflow-hidden shadow-2xl flex items-center justify-center bg-surface-container-lowest/50 transition-all duration-700 opacity-100 translate-y-0">
+{/*  ECG Animation Background  */}
+<svg className="absolute inset-0 w-full h-full opacity-30" viewBox="0 0 800 400">
+<path className="ecg-line fill-none stroke-teal-accent stroke-2" d="M0,200 L100,200 L115,180 L130,220 L145,200 L250,200 L265,100 L280,300 L295,200 L400,200 L415,180 L430,220 L445,200 L550,200 L565,50 L580,350 L595,200 L800,200"></path>
+</svg>
+{/*  Floating Diagnostic Card  */}
+<div className="absolute top-12 left-8 glass-panel p-6 rounded-xl border-l-4 border-risk-high animate-pulse transition-all">
+<div className="flex justify-between items-start gap-4">
+<div>
+<p className="font-label-caps text-label-caps text-text-muted mb-1 uppercase">Patient Risk Index</p>
+<h3 className="font-headline-section text-headline-section text-risk-high">High Alert (84%)</h3>
+</div>
+<span className="material-symbols-outlined text-risk-high" data-icon="warning" >warning</span>
+</div>
+</div>
+{/*  Data Panels  */}
+<div className="absolute bottom-12 right-8 glass-panel p-5 rounded-xl space-y-3 w-64 shadow-xl">
+<div className="flex items-center gap-3">
+<div className="w-10 h-10 rounded-full bg-primary-container flex items-center justify-center">
+<span className="material-symbols-outlined text-on-primary-container" data-icon="neurology">neurology</span>
+</div>
+<div>
+<p className="font-label-caps text-label-caps text-text-muted">Ensemble Model</p>
+<p className="text-body-compact font-semibold">Active Monitoring</p>
+</div>
+</div>
+<div className="h-[2px] w-full bg-border"></div>
+<div className="space-y-2">
+<div className="flex justify-between text-xs">
+<span className="text-text-muted">Confidence</span>
+<span className="text-teal-accent">99.2%</span>
+</div>
+<div className="w-full bg-surface-container h-1 rounded-full overflow-hidden">
+<div className="bg-teal-accent h-full w-[99%]"></div>
+</div>
+</div>
+</div>
+<img alt="Clinical Diagnostic Interface" className="w-full h-full object-cover mix-blend-overlay opacity-40" data-alt="A highly professional and cinematic medical visualization showing a dark, high-contrast cardiovascular diagnostic interface. The image features glowing teal and deep navy tones, with digital pulse waves and clinical data overlays. The lighting is low-key and dramatic, emphasizing medical precision and advanced AI technology within a sterile clinical environment. The atmosphere is intelligent and reassuring." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6aVzMU19_Dhoep70imy3m_Lpa6349oLMpmwSfu1VlgHDy53XN0PDFAUJdU0gzcWmgYAAykjvne4IbGa9Bm3-AmXOJGUPdoEdP4imzid0p8n48NfCMbDaoZTseR2igI1naJbuHcRlKfayuB2w66TSkCn_gYImaBcNKRhwInz_5kAUV6Aq8HLs54VY-rVzZQDGvcrsPEFOZR3TzlDxLeNO5FNHr-d77s86eCRrbvq6wmH-U4vQ-Q6U2_xQOGxh3dycg123D9svjGO8T"/>
+</div>
+</div>
+</div>
+</section>
+{/*  How It Works  */}
+<section className="py-section-gap bg-surface-container-lowest">
+<div className="max-w-container-max mx-auto px-margin-desktop">
+<div className="mb-16 text-center max-w-2xl mx-auto">
+<h2 className="font-headline-page text-headline-page text-text-primary mb-4">Why Clinicians Trust CorMetrics</h2>
+<p className="text-text-muted">Our multi-stage diagnostic process ensures clinical reliability by combining diverse data inputs with verified neural architectures.</p>
+</div>
+<div className="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+{/*  Step 1  */}
+<div className="group relative p-8 rounded-2xl bg-surface-container-low border border-border hover:border-teal-accent/40 transition-all hover:bg-surface-container duration-700 opacity-100 translate-y-0">
+<div className="w-12 h-12 rounded-lg bg-teal-accent/10 flex items-center justify-center mb-6 text-teal-accent group-hover:scale-110 transition-transform">
+<span className="material-symbols-outlined" data-icon="input">input</span>
+</div>
+<h3 className="font-title-card text-title-card text-text-primary mb-3">1. Data Entry</h3>
+<p className="font-body-compact text-body-compact text-text-muted">Import clinical vitals, patient history, and biomarker data through our secure, HIPAA-compliant interface.</p>
+<span className="absolute top-4 right-8 font-display-hero text-[60px] opacity-5 text-on-surface">01</span>
+</div>
+{/*  Step 2  */}
+<div className="group relative p-8 rounded-2xl bg-surface-container-low border border-border hover:border-teal-accent/40 transition-all hover:bg-surface-container duration-700 opacity-100 translate-y-0">
+<div className="w-12 h-12 rounded-lg bg-teal-accent/10 flex items-center justify-center mb-6 text-teal-accent group-hover:scale-110 transition-transform">
+<span className="material-symbols-outlined" data-icon="psychology">psychology</span>
+</div>
+<h3 className="font-title-card text-title-card text-text-primary mb-3">2. AI Analysis</h3>
+<p className="font-body-compact text-body-compact text-text-muted">Our ensemble ML pipeline cross-references data against 4.2M clinical records to identify subtle risk patterns.</p>
+<span className="absolute top-4 right-8 font-display-hero text-[60px] opacity-5 text-on-surface">02</span>
+</div>
+{/*  Step 3  */}
+<div className="group relative p-8 rounded-2xl bg-surface-container-low border border-border hover:border-teal-accent/40 transition-all hover:bg-surface-container duration-700 opacity-100 translate-y-0">
+<div className="w-12 h-12 rounded-lg bg-teal-accent/10 flex items-center justify-center mb-6 text-teal-accent group-hover:scale-110 transition-transform">
+<span className="material-symbols-outlined" data-icon="fact_check">fact_check</span>
+</div>
+<h3 className="font-title-card text-title-card text-text-primary mb-3">3. Guided Results</h3>
+<p className="font-body-compact text-body-compact text-text-muted">Receive a structured diagnostic summary with actionable risk scores and recommended clinical pathways.</p>
+<span className="absolute top-4 right-8 font-display-hero text-[60px] opacity-5 text-on-surface">03</span>
+</div>
+</div>
+</div>
+</section>
+{/*  Why Clinicians Trust It  */}
+<section className="py-section-gap relative">
+<div className="max-w-container-max mx-auto px-margin-desktop flex flex-col md:flex-row gap-16 items-center">
+<div className="md:w-1/2">
+<div className="relative w-full aspect-square rounded-3xl overflow-hidden glass-panel transition-all duration-700 opacity-100 translate-y-0">
+<img alt="Clinical Data Visualization" className="w-full h-full object-cover opacity-60" data-alt="A clean and professional medical research setting showing a clinician interacting with a large, high-resolution diagnostic screen. The screen displays complex 3D heart modeling and real-time ensemble model calculations. The color scheme is dominated by sophisticated teal accents and deep clinical grays. The lighting is bright but soft, conveying a sense of trustworthiness, advanced science, and clinical authority." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAtRSoeDjyavfC2H7cY-ufNYHCRnasYV1IZt-CSp4f4hxZSpCe85wbHI159ftB5rz2Aj56MRZeBSihSzlP-a31Zzv8E9_FKyP-UwonxjDMFlFW2lkjymfC5hfTqZoBqeym9dnRlZDI2pJh2RQekvdtFSti_KbcD21mn85ITIo63HZjyVammSw9Oa6wvsfhxPnblRQsCw-Ke60dvF9fHCW679e3WonycBGERzxnYmTHc_xr3BWXojFXnAA3PRRR3QE9U7kb9eK0MxtAw"/>
+<div className="absolute inset-0 bg-gradient-to-t from-background to-transparent"></div>
+<div className="absolute bottom-8 left-8 right-8 p-6 glass-panel rounded-xl">
+<p className="font-label-caps text-label-caps text-teal-accent mb-2">VALIDATED ACCURACY</p>
+<h4 className="font-headline-section text-headline-section text-text-primary mb-2">98.4% Sensitivity</h4>
+<p className="text-sm text-text-muted">In multi-center clinical validation trials across 12 hospitals.</p>
+</div>
+</div>
+</div>
+<div className="md:w-1/2 space-y-8">
+<h2 className="font-headline-page text-headline-page text-text-primary">Why Clinicians Trust CorMetrics</h2>
+<p className="text-text-muted">Unlike black-box algorithms, our platform provides explainable AI outputs, allowing cardiologists to understand exactly which biomarkers triggered a high-risk warning.</p>
+<div className="space-y-6 transition-all duration-700 opacity-100 translate-y-0">
+<div className="flex gap-4">
+<div className="mt-1 flex-shrink-0 w-6 h-6 rounded-full bg-primary-container flex items-center justify-center">
+<span className="material-symbols-outlined text-[14px] text-on-primary-container" data-icon="check" >check</span>
+</div>
+<div>
+<h4 className="font-title-card text-title-card text-text-primary">Ensemble Model Strategy</h4>
+<p className="text-body-compact text-text-muted">We combine four distinct neural architectures to eliminate bias and maximize predictive accuracy.</p>
+</div>
+</div>
+<div className="flex gap-4">
+<div className="mt-1 flex-shrink-0 w-6 h-6 rounded-full bg-primary-container flex items-center justify-center">
+<span className="material-symbols-outlined text-[14px] text-on-primary-container" data-icon="check" >check</span>
+</div>
+<div>
+<h4 className="font-title-card text-title-card text-text-primary">Data-Driven Explainability</h4>
+<p className="text-body-compact text-text-muted">Visualize feature importance and contributing factors for every individual risk assessment.</p>
+</div>
+</div>
+<div className="flex gap-4">
+<div className="mt-1 flex-shrink-0 w-6 h-6 rounded-full bg-primary-container flex items-center justify-center">
+<span className="material-symbols-outlined text-[14px] text-on-primary-container" data-icon="check" >check</span>
+</div>
+<div>
+<h4 className="font-title-card text-title-card text-text-primary">Clinical Integration</h4>
+<p className="text-body-compact text-text-muted">Built for FHIR/HL7 standards to integrate seamlessly with your existing EHR system.</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+{/*  CTA Footer  */}
+<section className="py-section-gap">
+<div className="max-w-container-max mx-auto px-margin-desktop">
+<div className="glass-panel p-12 md:p-20 rounded-[2rem] text-center space-y-8 relative overflow-hidden">
+<div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-teal-accent to-transparent transition-all duration-700 opacity-100 translate-y-0"></div>
+<h2 className="font-display-hero text-display-hero md:text-headline-page text-text-primary max-w-3xl mx-auto">Advance your practice with predictive heart care.</h2>
+<div className="flex flex-wrap justify-center gap-6 transition-all duration-700 opacity-100 translate-y-0">
+<button className="bg-teal-accent text-white font-title-card text-title-card px-10 py-4 rounded-xl hover:scale-[1.02] transition-all">Start Trial Assessment</button>
+<button className="border border-border text-text-primary font-title-card text-title-card px-10 py-4 rounded-xl hover:bg-surface-container-high transition-all">Contact Sales</button>
+</div>
+<div className="flex justify-center gap-8 pt-8 opacity-50 grayscale hover:grayscale-0 transition-all duration-700 opacity-100 translate-y-0">
+<div className="flex items-center gap-2">
+<span className="material-symbols-outlined text-teal-accent" data-icon="verified_user">verified_user</span>
+<span className="font-label-caps text-label-caps">HIPAA COMPLIANT</span>
+</div>
+<div className="flex items-center gap-2">
+<span className="material-symbols-outlined text-teal-accent" data-icon="health_and_safety">health_and_safety</span>
+<span className="font-label-caps text-label-caps">GDPR SECURE</span>
+</div>
+<div className="flex items-center gap-2">
+<span className="material-symbols-outlined text-teal-accent" data-icon="medical_services">medical_services</span>
+<span className="font-label-caps text-label-caps">CLINICAL GRADE AI</span>
+</div>
+</div>
+</div>
+</div>
+</section>
 
-        <div className="relative z-10 max-w-4xl mx-auto text-center space-y-8">
-          <h1 className="text-[var(--text-2xl)] font-[var(--font-display)] text-[var(--text-color)] tracking-tight leading-[1.1]">
-            Know Your Heart Risk <br className="hidden sm:block" />
-            <span className="text-[var(--accent-red)]">Before It's Too Late</span>
-          </h1>
-          
-          <p className="max-w-2xl mx-auto text-[var(--text-lg)] text-[var(--text-muted)] font-light leading-relaxed">
-            Medical-grade cardiovascular screening powered by advanced machine learning models. 
-            Instantly predict your disease probability with non-invasive clinical inputs.
-          </p>
-          
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-4">
-            <button 
-              onClick={() => router.push("/assessment")}
-              className="w-full sm:w-auto px-8 py-4 rounded-[var(--radius-lg)] bg-[var(--interactive-teal)] hover:bg-[var(--interactive-hover)] text-white text-[var(--text-base)] font-bold shadow-[var(--shadow-lg)] transition-all hover:scale-105 active:scale-95"
-            >
-              Predict Now
-            </button>
-            <button 
-              onClick={() => router.push("/dashboard")}
-              className="w-full sm:w-auto px-8 py-4 rounded-[var(--radius-lg)] border-2 border-[var(--interactive-teal)] text-[var(--interactive-teal)] hover:bg-[var(--interactive-teal)] hover:text-white text-[var(--text-base)] font-bold shadow-[var(--shadow-md)] transition-all hover:scale-105 active:scale-95"
-            >
-              View Dashboard
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* 3. Stat Row Section */}
-      <section className="border-y border-[var(--border-color)] bg-[var(--surface-color)] relative z-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-center divide-y md:divide-y-0 md:divide-x divide-[var(--border-color)]">
-            <div className="flex flex-col items-center justify-center p-4">
-              <span className="text-[var(--text-2xl)] font-bold text-[var(--interactive-teal)]">73,000+</span>
-              <span className="text-[var(--text-sm)] text-[var(--text-muted)] font-medium uppercase tracking-wider mt-2">Patients Analyzed</span>
-            </div>
-            <div className="flex flex-col items-center justify-center p-4">
-              <span className="text-[var(--text-2xl)] font-bold text-[var(--interactive-teal)]">72%</span>
-              <span className="text-[var(--text-sm)] text-[var(--text-muted)] font-medium uppercase tracking-wider mt-2">Average Model Accuracy</span>
-            </div>
-            <div className="flex flex-col items-center justify-center p-4">
-              <span className="text-[var(--text-2xl)] font-bold text-[var(--interactive-teal)]">5</span>
-              <span className="text-[var(--text-sm)] text-[var(--text-muted)] font-medium uppercase tracking-wider mt-2">ML Models Compared</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4. Feature Section (Asymmetric Layout) */}
-      <section className="py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-        <div className="text-center mb-16 space-y-4">
-          <h2 className="text-[var(--text-xl)] font-[var(--font-display)] text-[var(--text-color)]">
-            Advanced Intelligence for Your Heart
-          </h2>
-          <p className="text-[var(--text-base)] text-[var(--text-muted)] max-w-2xl mx-auto">
-            Our platform utilizes multiple machine learning pipelines to give you the most accurate prediction possible without invasive testing.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6">
-          {/* Feature 1: Full width card (12 cols) */}
-          <div className="md:col-span-12 p-8 rounded-[var(--radius-xl)] bg-[var(--surface-color)] border border-[var(--border-color)] shadow-[var(--shadow-md)] flex flex-col md:flex-row items-center gap-8 group hover:border-[var(--interactive-teal)] transition-all">
-            <div className="flex-1 space-y-4">
-              <div className="w-12 h-12 rounded-[var(--radius-lg)] bg-[var(--interactive-teal)]/10 flex items-center justify-center text-[var(--interactive-teal)]">
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
-              </div>
-              <h3 className="text-[var(--text-lg)] font-bold text-[var(--text-color)]">Multi-Model Comparison</h3>
-              <p className="text-[var(--text-base)] text-[var(--text-muted)]">
-                We don't rely on a single algorithm. We run your data through Random Forest, Logistic Regression, Decision Trees, SVM, and KNN simultaneously to find the consensus prediction, ensuring maximum reliability.
-              </p>
-            </div>
-            <div className="w-full md:w-1/3 aspect-video bg-[var(--bg-color)] rounded-[var(--radius-lg)] border border-[var(--border-color)] flex items-center justify-center relative overflow-hidden">
-              {/* Dummy chart graphic */}
-              <div className="absolute bottom-0 w-full h-1/2 flex items-end justify-between px-4 opacity-50 group-hover:opacity-100 transition-opacity">
-                <div className="w-1/6 bg-[var(--interactive-teal)] h-[40%] rounded-t-sm" />
-                <div className="w-1/6 bg-[var(--interactive-teal)] h-[70%] rounded-t-sm" />
-                <div className="w-1/6 bg-[var(--interactive-teal)] h-[60%] rounded-t-sm" />
-                <div className="w-1/6 bg-[var(--interactive-teal)] h-[90%] rounded-t-sm" />
-                <div className="w-1/6 bg-[var(--interactive-teal)] h-[85%] rounded-t-sm" />
-              </div>
-            </div>
-          </div>
-
-          {/* Feature 2: Half width (6 cols) */}
-          <div className="md:col-span-6 p-8 rounded-[var(--radius-xl)] bg-[var(--surface-color)] border border-[var(--border-color)] shadow-[var(--shadow-md)] hover:border-[var(--interactive-teal)] transition-all">
-            <div className="w-12 h-12 rounded-[var(--radius-lg)] bg-[var(--accent-red)]/10 flex items-center justify-center text-[var(--accent-red)] mb-6">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>
-            </div>
-            <h3 className="text-[var(--text-lg)] font-bold text-[var(--text-color)] mb-3">Instant Risk Score</h3>
-            <p className="text-[var(--text-base)] text-[var(--text-muted)]">
-              Get immediate feedback. Our AI processes your vitals and lifestyle habits in milliseconds to generate an easy-to-understand percentage risk score.
-            </p>
-          </div>
-
-          {/* Feature 3: Half width (6 cols) */}
-          <div className="md:col-span-6 p-8 rounded-[var(--radius-xl)] bg-[var(--surface-color)] border border-[var(--border-color)] shadow-[var(--shadow-md)] hover:border-[var(--interactive-teal)] transition-all">
-            <div className="w-12 h-12 rounded-[var(--radius-lg)] bg-[var(--accent-green)]/10 flex items-center justify-center text-[var(--accent-green)] mb-6">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
-            </div>
-            <h3 className="text-[var(--text-lg)] font-bold text-[var(--text-color)] mb-3">BMI Auto-Calc</h3>
-            <p className="text-[var(--text-base)] text-[var(--text-muted)]">
-              No need to do the math. Simply input your height and weight, and our system automatically calculates and utilizes your precise BMI for predictions.
-            </p>
-          </div>
-
-          {/* Feature 4: Full width (12 cols) */}
-          <div className="md:col-span-12 p-8 rounded-[var(--radius-xl)] bg-[var(--surface-color)] border border-[var(--border-color)] shadow-[var(--shadow-md)] flex items-start gap-6 hover:border-[var(--interactive-teal)] transition-all">
-            <div className="w-12 h-12 rounded-[var(--radius-lg)] bg-[var(--interactive-teal)]/10 flex-shrink-0 flex items-center justify-center text-[var(--interactive-teal)]">
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" /></svg>
-            </div>
-            <div>
-              <h3 className="text-[var(--text-lg)] font-bold text-[var(--text-color)] mb-2">Clinical-Grade Inputs</h3>
-              <p className="text-[var(--text-base)] text-[var(--text-muted)]">
-                Our model utilizes 11 specific clinical parameters including Systolic/Diastolic Blood Pressure, Cholesterol Levels, Glucose, and explicit lifestyle factors (smoking/alcohol) to ensure medical-grade accuracy that aligns with actual hospital screening standards.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 5. CTA Banner Section */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full mb-12">
-        <div className="rounded-[var(--radius-xl)] bg-[var(--bg-color)] border border-[var(--border-color)] p-12 text-center shadow-[var(--shadow-lg)] relative overflow-hidden">
-          {/* subtle decoration */}
-          <div className="absolute top-0 right-0 -mr-16 -mt-16 w-64 h-64 rounded-full bg-[var(--interactive-teal)] opacity-5 blur-3xl pointer-events-none" />
-          <div className="absolute bottom-0 left-0 -ml-16 -mb-16 w-48 h-48 rounded-full bg-[var(--accent-red)] opacity-5 blur-3xl pointer-events-none" />
-          
-          <div className="relative z-10 space-y-6">
-            <h2 className="text-[var(--text-xl)] font-[var(--font-display)] text-[var(--text-color)]">
-              Ready to Check Your Risk?
-            </h2>
-            <p className="text-[var(--text-base)] text-[var(--text-muted)] max-w-lg mx-auto">
-              Join thousands of users who have taken control of their heart health. It takes less than 2 minutes.
-            </p>
-            <div className="pt-4">
-              <button 
-                onClick={() => router.push("/assessment")}
-                className="px-8 py-4 rounded-[var(--radius-lg)] bg-[var(--interactive-teal)] hover:bg-[var(--interactive-hover)] text-white text-[var(--text-base)] font-bold shadow-[var(--shadow-lg)] transition-all hover:scale-105 active:scale-95"
-              >
-                Start Prediction
-              </button>
-            </div>
-          </div>
-        </div>
-      </section>
+</main>
+<Footer />
     </div>
   );
 }

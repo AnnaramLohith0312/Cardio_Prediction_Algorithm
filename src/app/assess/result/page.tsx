@@ -1,29 +1,54 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-
-type ResultProps = {
-  inputData: any;
-  resultData: any;
-  onReset: () => void;
-};
+import { useRouter } from "next/navigation";
+import TopNavBar from "@/components/shared/TopNavBar";
+import Footer from "@/components/shared/Footer";
+import RouteGuard from "@/components/shared/RouteGuard";
 
 const formatProbability = (probability: number): string => {
   const clamped = Math.min(Math.max(probability, 0), 1);
   return (clamped * 100).toFixed(1) + "%";
 };
 
-export default function PredictionResult({ inputData, resultData, onReset }: ResultProps) {
+export default function PredictionResult() {
+  const router = useRouter();
   const [mounted, setMounted] = useState(false);
+  const [inputData, setInputData] = useState<any>(null);
+  const [resultData, setResultData] = useState<any>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setMounted(true), 100);
-    const rawProb = resultData.probability !== undefined ? resultData.probability : resultData.risk_percentage;
-    if (rawProb < 0 || rawProb > 1) {
-      console.warn("Probability out of [0,1] range", rawProb);
+    const rawResult = sessionStorage.getItem("cormetrics_result");
+    const rawInput = sessionStorage.getItem("cormetrics_input");
+
+    if (!rawResult || !rawInput) {
+      router.replace("/assess");
+      return;
     }
-    return () => clearTimeout(timer);
-  }, [resultData]);
+
+    try {
+      const parsedResult = JSON.parse(rawResult);
+      setResultData(parsedResult);
+      setInputData(JSON.parse(rawInput));
+      
+      const timer = setTimeout(() => setMounted(true), 100);
+      const rawProb = parsedResult.probability !== undefined ? parsedResult.probability : parsedResult.risk_percentage;
+      if (rawProb < 0 || rawProb > 1) {
+        console.warn("Probability out of [0,1] range", rawProb);
+      }
+      return () => clearTimeout(timer);
+    } catch (e) {
+      router.replace("/assess");
+    }
+  }, [router]);
+
+  if (!resultData || !inputData) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="w-8 h-8 border-4 border-teal-accent border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
 
   const isHighRisk = resultData.prediction === 1;
   const rawProb = resultData.probability !== undefined ? resultData.probability : resultData.risk_percentage;
@@ -45,41 +70,41 @@ export default function PredictionResult({ inputData, resultData, onReset }: Res
     const formattedReportProb = (probClamp * 100).toFixed(1) + "%";
 
     const breakdownText = resultData.model_breakdown && resultData.model_breakdown.length > 0
-      ? \`\\nMODEL CONSENSUS BREAKDOWN:\\n\` + resultData.model_breakdown.map((item: any) => {
+      ? "\nMODEL CONSENSUS BREAKDOWN:\n" + resultData.model_breakdown.map((item: any) => {
           const itemProb = (item.probability * 100).toFixed(1) + "%";
           const itemRisk = item.prediction === 1 ? "HIGH RISK" : "LOW RISK";
-          return \`- \${item.name}: \${itemRisk} (Probability: \${itemProb})\`;
-        }).join("\\n")
+          return `- ${item.name}: ${itemRisk} (Probability: ${itemProb})`;
+        }).join("\n")
       : "";
 
-    const reportText = \`
+    const reportText = `
 CARDIOVASCULAR RISK PREDICTION REPORT (CorMetrics)
 ----------------------------------------------------
-Date: \${new Date().toLocaleString()}
-Risk Level: \${isHighRisk ? "HIGH RISK" : "LOW RISK"}
-Risk probability: \${formattedReportProb}
-Model Used: \${resultData.model_name}
-\${breakdownText}
+Date: ${new Date().toLocaleString()}
+Risk Level: ${isHighRisk ? "HIGH RISK" : "LOW RISK"}
+Risk probability: ${formattedReportProb}
+Model Used: ${resultData.model_name}
+${breakdownText}
 
 PATIENT PROFILE:
-Age: \${inputData.age_years} years
-BMI: \${resultData.bmi?.toFixed(1) || "--"} (\${resultData.bmi_category || "--"})
-Blood Pressure: \${inputData.ap_hi}/\${inputData.ap_lo} mmHg
-Cholesterol Level: \${inputData.cholesterol === "1" ? 'Normal' : inputData.cholesterol === "2" ? 'Above Normal' : 'Well Above Normal'}
-Glucose Level: \${inputData.gluc === "1" ? 'Normal' : inputData.gluc === "2" ? 'Above Normal' : 'Well Above Normal'}
-Smoker: \${inputData.smoke ? 'Yes' : 'No'}
-Alcohol: \${inputData.alco ? 'Yes' : 'No'}
-Active: \${inputData.active ? 'Yes' : 'No'}
+Age: ${inputData.age_years} years
+BMI: ${resultData.bmi?.toFixed(1) || "--"} (${resultData.bmi_category || "--"})
+Blood Pressure: ${inputData.ap_hi}/${inputData.ap_lo} mmHg
+Cholesterol Level: ${inputData.cholesterol === "1" ? 'Normal' : inputData.cholesterol === "2" ? 'Above Normal' : 'Well Above Normal'}
+Glucose Level: ${inputData.gluc === "1" ? 'Normal' : inputData.gluc === "2" ? 'Above Normal' : 'Well Above Normal'}
+Smoker: ${inputData.smoke ? 'Yes' : 'No'}
+Alcohol: ${inputData.alco ? 'Yes' : 'No'}
+Active: ${inputData.active ? 'Yes' : 'No'}
 
 CLINICAL ADVICE:
-\${resultData.advice}
-    \`.trim();
+${resultData.advice}
+    `.trim();
 
     const blob = new Blob([reportText], { type: "text/plain" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = \`cormetrics_report_\${new Date().getTime()}.txt\`;
+    a.download = `cormetrics_report_${new Date().getTime()}.txt`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -90,12 +115,13 @@ CLINICAL ADVICE:
   const highRiskCount = breakdown.reduce((acc: number, item: any) => acc + (item.prediction === 1 ? 1 : 0), 0);
   const totalModels = breakdown.length || 5;
   const consensusString = breakdown.length > 0
-    ? \`\${highRiskCount} of \${totalModels} models indicate elevated risk (\${(highRiskCount / totalModels * 100).toFixed(0)}% consensus)\`
+    ? `${highRiskCount} of ${totalModels} models indicate elevated risk (${(highRiskCount / totalModels * 100).toFixed(0)}% consensus)`
     : "Ensemble Prediction Details";
 
   return (
-    <div className="bg-background text-on-surface font-body-main selection:bg-teal-accent/30 min-h-screen">
-      <style dangerouslySetInnerHTML={{__html: \`
+    <RouteGuard>
+      <div className="bg-background text-on-surface font-body-main selection:bg-teal-accent/30 min-h-screen">
+      <style dangerouslySetInnerHTML={{__html: `
         .ecg-grid {
             background-size: 40px 40px;
             background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
@@ -106,27 +132,13 @@ CLINICAL ADVICE:
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-      \`}} />
+      `}} />
       
-      {/* TopNavBar */}
-      <header className="w-full top-0 sticky z-50 bg-background/80 backdrop-blur-md border-b border-border">
-        <nav className="flex justify-between items-center px-margin-desktop py-4 max-w-container-max mx-auto">
-          <div className="font-headline-page text-headline-page text-primary font-bold">CorMetrics</div>
-          <div className="hidden md:flex gap-8 items-center">
-            <a href="/dashboard" className="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200">Dashboard</a>
-            <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200">Analytics</a>
-            <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200">Methodology</a>
-            <a href="/predict" className="text-primary font-semibold border-b-2 border-primary pb-1">Risk Assessment</a>
-          </div>
-          <div className="flex items-center gap-4">
-            <button onClick={onReset} className="text-teal-accent border border-teal-accent/50 px-4 py-1.5 rounded-lg text-sm hover:bg-teal-accent/10 transition-colors">New Assessment</button>
-          </div>
-        </nav>
-      </header>
+      <TopNavBar />
 
-      <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 relative">
+      <main className="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-12 relative flex-grow">
         <div className="absolute inset-0 ecg-grid opacity-10 pointer-events-none -z-10"></div>
-        <div className={\`absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-96 blur-[120px] rounded-full pointer-events-none -z-10 \${isHighRisk ? 'bg-risk-high/10' : 'bg-risk-low/10'}\`}></div>
+        <div className={`absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-96 blur-[120px] rounded-full pointer-events-none -z-10 ${isHighRisk ? 'bg-risk-high/10' : 'bg-risk-low/10'}`}></div>
 
         <div className="text-center mb-12 animate-[fadeIn_0.5s_ease-out]">
           <span className="font-label-caps text-label-caps text-teal-accent uppercase tracking-widest">Diagnostic Report</span>
@@ -137,14 +149,14 @@ CLINICAL ADVICE:
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-gutter max-w-6xl mx-auto">
           
           {/* Main Hero Card (Risk Indicator) */}
-          <div className={\`lg:col-span-7 glass-panel rounded-[24px] p-8 md:p-12 relative overflow-hidden flex flex-col items-center justify-center text-center \${riskBorder} shadow-2xl\`}>
+          <div className={`lg:col-span-7 glass-panel rounded-[24px] p-8 md:p-12 relative overflow-hidden flex flex-col items-center justify-center text-center ${riskBorder} shadow-2xl`}>
             <div className="absolute top-6 left-6 flex items-center gap-2">
-              <div className={\`w-2 h-2 rounded-full \${riskBg} animate-pulse\`}></div>
+              <div className={`w-2 h-2 rounded-full ${riskBg} animate-pulse`}></div>
               <span className="font-label-caps text-[10px] text-on-surface-variant tracking-wider">LIVE STATUS</span>
             </div>
             
-            <div className={\`w-32 h-32 rounded-full flex items-center justify-center mb-8 relative \${riskBgLight}\`}>
-              <div className={\`absolute inset-0 rounded-full animate-ping opacity-30 \${riskBg}\`}></div>
+            <div className={`w-32 h-32 rounded-full flex items-center justify-center mb-8 relative ${riskBgLight}`}>
+              <div className={`absolute inset-0 rounded-full animate-ping opacity-30 ${riskBg}`}></div>
               {isHighRisk ? (
                 <span className="material-symbols-outlined text-[64px] text-risk-high relative z-10" style={{ fontVariationSettings: "'FILL' 1" }}>warning</span>
               ) : (
@@ -152,7 +164,7 @@ CLINICAL ADVICE:
               )}
             </div>
 
-            <h2 className={\`font-headline-page text-[36px] mb-2 \${riskColor}\`}>
+            <h2 className={`font-headline-page text-[36px] mb-2 ${riskColor}`}>
               {isHighRisk ? "Elevated Risk Detected" : "Optimal Cardiovascular Health"}
             </h2>
             <p className="text-text-muted mb-10 max-w-md">
@@ -183,7 +195,7 @@ CLINICAL ADVICE:
                 </defs>
               </svg>
               <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex flex-col items-center">
-                <span className={\`text-[48px] font-bold leading-none \${riskColor}\`}>
+                <span className={`text-[48px] font-bold leading-none ${riskColor}`}>
                   {mounted ? (normalizedProb * 100).toFixed(0) : 0}%
                 </span>
                 <span className="font-label-caps text-[10px] text-on-surface-variant">PROBABILITY</span>
@@ -209,7 +221,16 @@ CLINICAL ADVICE:
                   <span className="material-symbols-outlined group-hover:translate-y-1 transition-transform">arrow_downward</span>
                 </button>
                 <button 
-                  onClick={onReset}
+                  onClick={() => window.print()}
+                  className="w-full bg-surface-container-low hover:bg-surface-container-high border border-border text-on-surface py-4 px-6 rounded-xl font-bold flex items-center justify-between transition-all"
+                >
+                  <span className="flex items-center gap-3">
+                    <span className="material-symbols-outlined">print</span>
+                    Print Summary
+                  </span>
+                </button>
+                <button 
+                  onClick={() => router.push("/assess")}
                   className="w-full bg-surface-container-low hover:bg-surface-container-high border border-border text-on-surface py-4 px-6 rounded-xl font-bold flex items-center justify-between transition-all"
                 >
                   <span className="flex items-center gap-3">
@@ -228,7 +249,7 @@ CLINICAL ADVICE:
                     <h3 className="font-title-card text-primary">Ensemble Consensus</h3>
                     <p className="text-metadata text-text-muted mt-1">{consensusString}</p>
                   </div>
-                  <div className={\`px-3 py-1 rounded-full text-[10px] font-bold border \${isHighRisk ? 'border-risk-high/30 bg-risk-high/10 text-risk-high' : 'border-risk-low/30 bg-risk-low/10 text-risk-low'}\`}>
+                  <div className={`px-3 py-1 rounded-full text-[10px] font-bold border ${isHighRisk ? 'border-risk-high/30 bg-risk-high/10 text-risk-high' : 'border-risk-low/30 bg-risk-low/10 text-risk-low'}`}>
                     {resultData.model_name}
                   </div>
                 </div>
@@ -241,12 +262,12 @@ CLINICAL ADVICE:
                       <div key={idx} className="group">
                         <div className="flex justify-between text-xs mb-2">
                           <span className="font-semibold text-on-surface group-hover:text-teal-accent transition-colors">{item.name}</span>
-                          <span className={\`font-mono font-bold \${itemIsHigh ? 'text-risk-high' : 'text-risk-low'}\`}>{itemProbPercent}%</span>
+                          <span className={`font-mono font-bold ${itemIsHigh ? 'text-risk-high' : 'text-risk-low'}`}>{itemProbPercent}%</span>
                         </div>
                         <div className="w-full h-1.5 bg-surface-container-lowest rounded-full overflow-hidden">
                           <div 
-                            className={\`h-full rounded-full transition-all duration-1000 \${itemIsHigh ? 'bg-risk-high' : 'bg-risk-low'}\`}
-                            style={{ width: \`\${mounted ? itemProbPercent : 0}%\` }}
+                            className={`h-full rounded-full transition-all duration-1000 ${itemIsHigh ? 'bg-risk-high' : 'bg-risk-low'}`}
+                            style={{ width: `${mounted ? itemProbPercent : 0}%` }}
                           ></div>
                         </div>
                       </div>
@@ -274,7 +295,7 @@ CLINICAL ADVICE:
                 <div className="flex items-center gap-2">
                   <span className="text-lg font-bold text-primary">{resultData.bmi?.toFixed(1) || "--"}</span>
                   {resultData.bmi_category && (
-                    <span className={\`text-[10px] px-1.5 py-0.5 rounded font-bold \${resultData.bmi < 25 ? 'bg-risk-low/20 text-risk-low' : resultData.bmi < 30 ? 'bg-risk-medium/20 text-risk-medium' : 'bg-risk-high/20 text-risk-high'}\`}>
+                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${resultData.bmi < 25 ? 'bg-risk-low/20 text-risk-low' : resultData.bmi < 30 ? 'bg-risk-medium/20 text-risk-medium' : 'bg-risk-high/20 text-risk-high'}`}>
                       {resultData.bmi_category.split(' ')[0]}
                     </span>
                   )}
@@ -292,20 +313,77 @@ CLINICAL ADVICE:
               <div className="bg-surface-container-lowest p-4 rounded-xl border border-border/50 col-span-2 md:col-span-4 lg:col-span-1">
                 <span className="font-label-caps text-[10px] text-on-surface-variant block mb-2">LIFESTYLE</span>
                 <div className="flex flex-wrap gap-1.5">
-                  <span className={\`text-[10px] px-2 py-1 rounded border \${inputData.smoke ? 'border-risk-high/30 text-risk-high' : 'border-risk-low/30 text-risk-low'}\`}>Smoke</span>
-                  <span className={\`text-[10px] px-2 py-1 rounded border \${inputData.alco ? 'border-risk-high/30 text-risk-high' : 'border-risk-low/30 text-risk-low'}\`}>Alcohol</span>
-                  <span className={\`text-[10px] px-2 py-1 rounded border \${!inputData.active ? 'border-risk-high/30 text-risk-high' : 'border-risk-low/30 text-risk-low'}\`}>Active</span>
+                <span className={`text-[10px] px-2 py-1 rounded border ${inputData.smoke ? 'border-risk-high/30 text-risk-high' : 'border-risk-low/30 text-risk-low'}`}>Smoke</span>
+                  <span className={`text-[10px] px-2 py-1 rounded border ${inputData.alco ? 'border-risk-high/30 text-risk-high' : 'border-risk-low/30 text-risk-low'}`}>Alcohol</span>
+                  <span className={`text-[10px] px-2 py-1 rounded border ${!inputData.active ? 'border-risk-high/30 text-risk-high' : 'border-risk-low/30 text-risk-low'}`}>Active</span>
                 </div>
               </div>
             </div>
           </div>
 
+          {/* Bottom Row: Clinical Advice & Risk Drivers */}
+          <div className="col-span-1 lg:col-span-12 grid grid-cols-1 md:grid-cols-2 gap-gutter mt-8">
+            
+            {/* Clinical Advice Card */}
+            <div className="bg-surface-container border border-border rounded-[20px] p-8">
+              <h3 className="font-title-card text-primary mb-4 flex items-center gap-2">
+                <span className="material-symbols-outlined text-teal-accent">healing</span>
+                Lifestyle Guidance
+              </h3>
+              {resultData.advice ? (
+                <div className="text-on-surface-variant leading-relaxed">
+                  <p className="whitespace-pre-line">{resultData.advice}</p>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-text-muted">
+                  <span className="material-symbols-outlined text-4xl mb-2 opacity-20">hourglass_empty</span>
+                  <p>No specific guidance available.</p>
+                </div>
+              )}
+            </div>
+
+            {/* Critical Risk Drivers Card */}
+            <div className="bg-surface-container border border-border rounded-[20px] p-8">
+              <h3 className="font-title-card text-primary mb-4 flex items-center gap-2">
+                <span className="material-symbols-outlined text-risk-high">trending_up</span>
+                Critical Risk Drivers
+              </h3>
+              {resultData.feature_impacts && Object.keys(resultData.feature_impacts).length > 0 ? (
+                <div className="space-y-4">
+                  {Object.entries(resultData.feature_impacts)
+                    .sort(([, a], [, b]) => Math.abs(b as number) - Math.abs(a as number))
+                    .slice(0, 5)
+                    .map(([feature, impact], idx) => (
+                    <div key={idx} className="flex flex-col gap-1">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-on-surface capitalize">{feature.replace('_', ' ')}</span>
+                        <span className="text-text-muted">{(Number(impact) * 100).toFixed(1)}% impact</span>
+                      </div>
+                      <div className="w-full h-1.5 bg-surface-container-lowest rounded-full overflow-hidden">
+                        <div 
+                          className="h-full rounded-full bg-risk-high opacity-80"
+                          style={{ width: `${Math.min(Math.abs(Number(impact)) * 100 * 2, 100)}%` }}
+                        ></div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-8 text-text-muted">
+                  <span className="material-symbols-outlined text-4xl mb-2 opacity-20">analytics</span>
+                  <p>Feature importance data not available for this model.</p>
+                  <p className="text-xs mt-1">(Mapped to feature_impacts if provided)</p>
+                </div>
+              )}
+            </div>
+            
+          </div>
+
         </div>
       </main>
 
-      <footer className="w-full py-8 border-t border-border mt-12 bg-surface-container-low text-center">
-        <p className="font-metadata text-text-muted">© 2024 CorMetrics. For clinical decision support only.</p>
-      </footer>
+      <Footer />
     </div>
+    </RouteGuard>
   );
 }

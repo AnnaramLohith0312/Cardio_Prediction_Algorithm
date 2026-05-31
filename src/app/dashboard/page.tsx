@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import Navbar from "@/components/Navbar";
+import { formatProbability } from "@/lib/utils";
+import TopNavBar from "@/components/shared/TopNavBar";
+import RouteGuard from "@/components/shared/RouteGuard";
 import { fetchDashboardStats, DashboardStats } from "@/lib/api";
 
 function formatRelativeTime(dateStr: string): string {
@@ -60,15 +62,15 @@ export default function DashboardPage() {
   const handleRetry = () => {
     loadData();
   };
-
   const handleRefresh = () => {
     setAnimated(false);
     loadData(true);
   };
 
   return (
+    <RouteGuard>
     <div className="min-h-screen bg-[var(--bg-color)] animate-[fadeIn_0.3s_ease-out]">
-      <Navbar />
+      <TopNavBar />
 
       {/* Inject custom Shimmer CSS */}
       <style dangerouslySetInnerHTML={{__html: `
@@ -112,7 +114,7 @@ export default function DashboardPage() {
               </svg>
             </button>
             <button 
-              onClick={() => router.push("/predict")}
+              onClick={() => router.push("/assess")}
               className="px-6 py-3 bg-[var(--interactive-teal)] hover:bg-[var(--interactive-hover)] text-white rounded-[var(--radius-full)] font-bold shadow-[var(--shadow-md)] transition-all active:scale-95 flex items-center gap-2 whitespace-nowrap"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -266,7 +268,7 @@ export default function DashboardPage() {
                       <span className={idx === 0 ? "text-[var(--interactive-teal)]" : "text-[var(--text-color)]"}>
                         {model.name} {idx === 0 && "(Best)"}
                       </span>
-                      <span className="text-[var(--text-muted)] font-mono">{(model.accuracy * 100).toFixed(1)}%</span>
+                      <span className="text-[var(--text-muted)] font-mono">{formatProbability(model.accuracy)}</span>
                     </div>
                     <div className="w-full bg-[var(--bg-color)] h-3 rounded-full overflow-hidden border border-[var(--border-color)]">
                       <div 
@@ -371,7 +373,7 @@ export default function DashboardPage() {
               <p className="font-bold text-lg text-[var(--text-color)]">No predictions logged yet</p>
               <p className="text-sm mt-1">Complete your first patient checkup in the Predict screen.</p>
               <button 
-                onClick={() => router.push("/predict")}
+                onClick={() => router.push("/assess")}
                 className="mt-6 px-6 py-2.5 bg-[var(--interactive-teal)] hover:bg-[var(--interactive-hover)] text-white font-bold rounded-full text-sm transition-all"
               >
                 Assess Patient Now
@@ -414,7 +416,7 @@ export default function DashboardPage() {
                               {row.risk_level} RISK
                             </span>
                           </td>
-                          <td className={`px-6 py-4 font-bold font-mono ${probColor}`}>{(row.risk_probability * 100).toFixed(1)}%</td>
+                          <td className={`px-6 py-4 font-bold font-mono ${probColor}`}>{formatProbability(row.risk_probability)}</td>
                           <td className="px-6 py-4 text-xs text-[var(--text-muted)] font-semibold">{row.model_name}</td>
                           <td className="px-6 py-4 text-[var(--text-muted)] text-xs font-medium">{formatRelativeTime(row.created_at)}</td>
                         </tr>
@@ -440,7 +442,7 @@ export default function DashboardPage() {
                         <span className={`px-3 py-1 rounded-full text-xs font-bold ${row.risk_level === "HIGH" ? "bg-[#ef4444]/10 text-[#ef4444] border border-[#ef4444]/30" : "bg-[#22c55e]/10 text-[#22c55e] border border-[#22c55e]/30"}`}>
                           {row.risk_level} RISK
                         </span>
-                        <span className={`font-bold font-mono text-sm ${probColor}`}>{(row.risk_probability * 100).toFixed(1)}% Prob</span>
+                        <span className={`font-bold font-mono text-sm ${probColor}`}>{formatProbability(row.risk_probability)} Prob</span>
                       </div>
                       <div className="grid grid-cols-4 gap-2 text-xs text-[var(--text-muted)] bg-[var(--bg-color)] p-2.5 rounded-lg text-center font-mono">
                         <div>
@@ -471,5 +473,6 @@ export default function DashboardPage() {
         </section>
       </main>
     </div>
+    </RouteGuard>
   );
 }

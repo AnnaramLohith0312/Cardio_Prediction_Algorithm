@@ -10,8 +10,8 @@ const instrumentSerif = Instrument_Serif({
 });
 
 export const metadata: Metadata = {
-  title: "CardioSense AI | Premium Cardiovascular Screening",
-  description: "Medical-grade heart health intelligence.",
+  title: "CorMetrics | Premium Cardiovascular Screening",
+  description: "Advanced machine learning ensemble for cardiovascular risk assessment.",
 };
 
 export default function RootLayout({

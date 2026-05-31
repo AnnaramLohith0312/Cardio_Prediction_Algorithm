@@ -48,3 +48,6 @@ __pycache__/
 .pytest_cache/
 backups/
 *.csv
+backend/venv/
+*.js
+*.txt

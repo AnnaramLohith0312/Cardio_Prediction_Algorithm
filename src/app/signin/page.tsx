@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 import { GoogleLogin } from "@react-oauth/google";
 import { useAuth } from "@/hooks/useAuth";
+import Footer from "@/components/shared/Footer";
 
 function SignInFormContent() {
   const router = useRouter();
@@ -155,7 +156,13 @@ function SignInFormContent() {
               </div>
             )}
 
-            <form className="space-y-6" onSubmit={handleSubmit}>
+            {error && (
+  <div className="mb-6 p-4 bg-error-container text-on-error-container rounded-lg border border-error/50 flex items-center gap-3">
+    <span className="material-symbols-outlined">error</span>
+    <p className="text-sm font-medium">{error}</p>
+  </div>
+)}
+<form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-2">
                 <label className="font-label-caps text-label-caps text-on-surface-variant ml-1" htmlFor="email">EMAIL ADDRESS</label>
                 <div className="relative group">
@@ -209,13 +216,13 @@ function SignInFormContent() {
                 <label className="font-body-compact text-text-secondary cursor-pointer select-none" htmlFor="remember">Keep me signed in for 30 days</label>
               </div>
               
-              <button 
+              <button
                 type="submit"
                 disabled={loading}
                 className="w-full bg-teal-accent hover:bg-teal-accent/90 active:scale-[0.98] disabled:opacity-50 text-white font-title-card py-4 rounded-xl transition-all shadow-lg shadow-teal-accent/10 flex items-center justify-center gap-2"
               >
-                {loading ? "Signing In..." : "Sign In"}
-                {!loading && <span className="material-symbols-outlined text-[20px]">arrow_forward</span>}
+                <span>{loading ? "Signing in..." : "Secure Sign In"}</span>
+                {!loading && <span className="material-symbols-outlined text-[18px]">lock_open</span>}
               </button>
             </form>
 
@@ -260,21 +267,7 @@ function SignInFormContent() {
         </section>
       </main>
 
-      {/* Footer for Metadata and Legal */}
-      <footer className="w-full py-8 border-t border-border bg-surface-container-low">
-        <div className="px-margin-desktop max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-component-gap">
-          <div className="flex flex-col gap-2">
-            <span className="font-title-card text-title-card text-on-surface">CorMetrics</span>
-            <p className="font-metadata text-metadata text-text-muted max-w-md">© 2024 CorMetrics. For clinical decision support only. Not a replacement for professional medical advice.</p>
-          </div>
-          <div className="flex flex-wrap gap-x-8 gap-y-4">
-            <a href="#" className="font-metadata text-metadata text-text-muted hover:text-on-surface transition-colors">Privacy Policy</a>
-            <a href="#" className="font-metadata text-metadata text-text-muted hover:text-on-surface transition-colors">Terms of Service</a>
-            <a href="#" className="font-metadata text-metadata text-text-muted hover:text-on-surface transition-colors">HIPAA Compliance</a>
-            <a href="#" className="font-metadata text-metadata text-text-muted hover:text-on-surface transition-colors">Contact Support</a>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

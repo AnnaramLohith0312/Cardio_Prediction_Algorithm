@@ -3,9 +3,11 @@
 import React, { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
-import PredictionResult from "./result";
 import LoadingScreen from "@/components/LoadingScreen";
 import ErrorBanner from "@/components/ErrorBanner";
+import TopNavBar from "@/components/shared/TopNavBar";
+import Footer from "@/components/shared/Footer";
+import RouteGuard from "@/components/shared/RouteGuard";
 
 type FormData = {
   age_years: string;
@@ -30,7 +32,6 @@ export default function PredictPage() {
   
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [resultData, setResultData] = useState<any>(null);
   const [formData, setFormData] = useState<FormData>({
     age_years: "",
     gender: "",
@@ -132,7 +133,8 @@ export default function PredictPage() {
       const headers: HeadersInit = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
-      const res = await fetch("/api/predict", {
+      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+      const res = await fetch(`${API_BASE_URL}/api/v1/predict/`, {
         method: "POST",
         headers,
         body: JSON.stringify(payload),
@@ -141,39 +143,20 @@ export default function PredictPage() {
       if (!res.ok) throw new Error("Prediction failed");
       const data = await res.json();
       
-      setResultData(data);
+      sessionStorage.setItem("cormetrics_result", JSON.stringify(data));
+      sessionStorage.setItem("cormetrics_input", JSON.stringify(formData));
+      
       setLoading(false);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      router.push("/assess/result");
     } catch (err: any) {
       setErrorMsg(err.message || "An unexpected error occurred.");
       setLoading(false);
     }
   };
 
-  const handleReset = () => {
-    setResultData(null);
-    setCurrentStep(1);
-    setFormData({
-      age_years: "", gender: "", height: "", weight: "",
-      ap_hi: "", ap_lo: "", cholesterol: "1", gluc: "1",
-      smoke: false, alco: false, active: true,
-    });
-  };
-
-  if (resultData) {
-    return (
-      <div className="bg-background text-on-background min-h-screen">
-        <PredictionResult 
-          inputData={formData} 
-          resultData={resultData} 
-          onReset={handleReset} 
-        />
-      </div>
-    );
-  }
-
   return (
-    <div className="bg-background text-on-background font-body-main selection:bg-teal-accent/30 min-h-screen">
+    <RouteGuard>
+      <div className="bg-background text-on-surface font-body-main selection:bg-teal-accent/30 min-h-screen flex flex-col">
       <style dangerouslySetInnerHTML={{__html: `
         .step-transition { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
         .glass-panel {
@@ -183,23 +166,9 @@ export default function PredictPage() {
         }
       `}} />
       
-      {/* TopNavBar */}
-      <header className="w-full top-0 sticky z-50 bg-background/80 backdrop-blur-md border-b border-border">
-        <nav className="flex justify-between items-center px-margin-desktop py-4 max-w-container-max mx-auto">
-          <div className="font-headline-page text-headline-page text-primary font-bold">CorMetrics</div>
-          <div className="hidden md:flex gap-8 items-center">
-            <a href="/dashboard" className="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200">Dashboard</a>
-            <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200">Analytics</a>
-            <a href="#" className="text-on-surface-variant font-medium hover:text-primary transition-colors duration-200">Methodology</a>
-            <a href="/predict" className="text-primary font-semibold border-b-2 border-primary pb-1">Risk Assessment</a>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="material-symbols-outlined text-on-surface-variant cursor-pointer">account_circle</span>
-          </div>
-        </nav>
-      </header>
+      <TopNavBar />
 
-      <main className="max-w-4xl mx-auto px-margin-mobile md:px-0 py-12">
+      <main className="max-w-4xl mx-auto px-margin-mobile md:px-0 py-12 flex-grow w-full">
         {errorMsg && <ErrorBanner message={errorMsg} onDismiss={() => setErrorMsg(null)} />}
         {loading && <LoadingScreen />}
 
@@ -211,7 +180,7 @@ export default function PredictPage() {
             <div className="absolute top-1/2 left-0 w-full h-[2px] bg-surface-container-high -z-10 -translate-y-1/2"></div>
             <div 
               className="absolute top-1/2 left-0 h-[2px] bg-teal-accent -z-10 -translate-y-1/2 transition-all duration-500" 
-              style={{ width: \`\${((currentStep - 1) / (totalSteps - 1)) * 100}%\` }}
+              style={{ width: `${((currentStep - 1) / (totalSteps - 1)) * 100}%` }}
             ></div>
             
             {[1, 2, 3, 4].map((stepIdx) => {
@@ -220,10 +189,10 @@ export default function PredictPage() {
               const isPast = currentStep > stepIdx;
               return (
                 <div key={stepIdx} className="step-node flex flex-col items-center gap-2 group">
-                  <div className={\`w-10 h-10 rounded-full flex items-center justify-center font-bold ring-4 ring-background transition-all \${isPast || isActive ? 'bg-teal-accent text-white' : 'bg-surface-container-highest text-on-surface-variant'}\`}>
+                  <div className={`w-10 h-10 rounded-full flex items-center justify-center font-bold ring-4 ring-background transition-all ${isPast || isActive ? 'bg-teal-accent text-white' : 'bg-surface-container-highest text-on-surface-variant'}`}>
                     {isPast ? <span className="material-symbols-outlined text-sm">check</span> : stepIdx}
                   </div>
-                  <span className={\`font-label-caps text-[10px] \${isPast || isActive ? 'text-teal-accent' : 'text-on-surface-variant'}\`}>
+                  <span className={`font-label-caps text-[10px] ${isPast || isActive ? 'text-teal-accent' : 'text-on-surface-variant'}`}>
                     {labels[stepIdx - 1]}
                   </span>
                 </div>
@@ -249,7 +218,7 @@ export default function PredictPage() {
                     type="number" 
                     value={formData.age_years}
                     onChange={e => handleChange("age_years", e.target.value)}
-                    className={\`w-full bg-surface-container-lowest border \${errors.age_years ? 'border-risk-high' : 'border-border'} rounded-lg p-4 text-primary focus:border-teal-accent transition-all outline-none\`} 
+                    className={`w-full bg-surface-container-lowest border ${errors.age_years ? 'border-risk-high' : 'border-border'} rounded-lg p-4 text-primary focus:border-teal-accent transition-all outline-none`} 
                     placeholder="e.g. 45" 
                   />
                 </div>
@@ -258,7 +227,7 @@ export default function PredictPage() {
                   <select 
                     value={formData.gender}
                     onChange={e => handleChange("gender", e.target.value)}
-                    className={\`w-full bg-surface-container-lowest border \${errors.gender ? 'border-risk-high' : 'border-border'} rounded-lg p-4 text-primary focus:border-teal-accent transition-all outline-none\`}
+                    className={`w-full bg-surface-container-lowest border ${errors.gender ? 'border-risk-high' : 'border-border'} rounded-lg p-4 text-primary focus:border-teal-accent transition-all outline-none`}
                   >
                     <option value="">Select...</option>
                     <option value="2">Male</option>
@@ -271,7 +240,7 @@ export default function PredictPage() {
                     type="number" 
                     value={formData.height}
                     onChange={e => handleChange("height", e.target.value)}
-                    className={\`w-full bg-surface-container-lowest border \${errors.height ? 'border-risk-high' : 'border-border'} rounded-lg p-4 text-primary focus:border-teal-accent transition-all outline-none\`}
+                    className={`w-full bg-surface-container-lowest border ${errors.height ? 'border-risk-high' : 'border-border'} rounded-lg p-4 text-primary focus:border-teal-accent transition-all outline-none`}
                     placeholder="e.g. 175" 
                   />
                 </div>
@@ -281,7 +250,7 @@ export default function PredictPage() {
                     type="number" 
                     value={formData.weight}
                     onChange={e => handleChange("weight", e.target.value)}
-                    className={\`w-full bg-surface-container-lowest border \${errors.weight ? 'border-risk-high' : 'border-border'} rounded-lg p-4 text-primary focus:border-teal-accent transition-all outline-none\`}
+                    className={`w-full bg-surface-container-lowest border ${errors.weight ? 'border-risk-high' : 'border-border'} rounded-lg p-4 text-primary focus:border-teal-accent transition-all outline-none`}
                     placeholder="e.g. 70" 
                   />
                 </div>
@@ -294,10 +263,10 @@ export default function PredictPage() {
                   <p className="text-metadata text-on-surface-variant">Calculated automatically from height and weight.</p>
                 </div>
                 <div className="text-right">
-                  <span className={\`text-4xl font-bold \${bmi ? 'text-teal-accent' : 'text-text-muted'}\`}>
+                  <span className={`text-4xl font-bold ${bmi ? 'text-teal-accent' : 'text-text-muted'}`}>
                     {bmi ? bmi.toFixed(1) : "--.-"}
                   </span>
-                  <span className={\`block text-metadata \${bmiStatus.color}\`}>{bmiStatus.text}</span>
+                  <span className={`block text-metadata ${bmiStatus.color}`}>{bmiStatus.text}</span>
                 </div>
               </div>
             </section>
@@ -320,7 +289,7 @@ export default function PredictPage() {
                     type="number" 
                     value={formData.ap_hi}
                     onChange={e => handleChange("ap_hi", e.target.value)}
-                    className={\`w-full bg-surface-container-lowest border \${errors.ap_hi ? 'border-risk-high' : 'border-border'} rounded-lg p-4 text-primary focus:border-teal-accent outline-none\`} 
+                    className={`w-full bg-surface-container-lowest border ${errors.ap_hi ? 'border-risk-high' : 'border-border'} rounded-lg p-4 text-primary focus:border-teal-accent outline-none`} 
                     placeholder="120" 
                   />
                 </div>
@@ -333,7 +302,7 @@ export default function PredictPage() {
                     type="number" 
                     value={formData.ap_lo}
                     onChange={e => handleChange("ap_lo", e.target.value)}
-                    className={\`w-full bg-surface-container-lowest border \${errors.ap_lo ? 'border-risk-high' : 'border-border'} rounded-lg p-4 text-primary focus:border-teal-accent outline-none\`} 
+                    className={`w-full bg-surface-container-lowest border ${errors.ap_lo ? 'border-risk-high' : 'border-border'} rounded-lg p-4 text-primary focus:border-teal-accent outline-none`} 
                     placeholder="80" 
                   />
                 </div>
@@ -454,8 +423,8 @@ export default function PredictPage() {
                 <div className="bg-surface-container-lowest p-5 rounded-lg border border-border">
                   <span className="font-label-caps text-[10px] text-on-surface-variant block mb-3">VITALS & LABS</span>
                   <div className="space-y-1">
-                    <div className="flex justify-between text-metadata"><span className="text-on-surface-variant">BP</span><span className="text-primary">{formData.ap_hi && formData.ap_lo ? \`\${formData.ap_hi}/\${formData.ap_lo}\` : "--/--"}</span></div>
-                    <div className="flex justify-between text-metadata"><span className="text-on-surface-variant">Pulse Press.</span><span className="text-primary font-bold">{pulsePressure !== null ? \`\${pulsePressure} mmHg\` : "--"}</span></div>
+                    <div className="flex justify-between text-metadata"><span className="text-on-surface-variant">BP</span><span className="text-teal-accent font-bold">{formData.ap_hi && formData.ap_lo ? <>{formData.ap_hi}/{formData.ap_lo} mmHg</> : "– / –"}</span></div>
+                    <div className="flex justify-between text-metadata"><span className="text-on-surface-variant">Pulse Press.</span><span className="text-teal-accent font-bold">{pulsePressure !== null && !isNaN(pulsePressure) ? <>{pulsePressure} mmHg</> : "– mmHg"}</span></div>
                     <div className="flex justify-between text-metadata"><span className="text-on-surface-variant">Cholesterol</span><span className="text-primary">Lvl {formData.cholesterol || "--"}</span></div>
                   </div>
                 </div>
@@ -492,7 +461,7 @@ export default function PredictPage() {
           <div className="mt-12 flex justify-between items-center border-t border-border pt-8">
             <button 
               onClick={handlePrev}
-              className={\`flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors \${currentStep === 1 ? 'invisible' : ''}\`}
+              className={`flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors ${currentStep === 1 ? 'invisible' : ''}`}
             >
               <span className="material-symbols-outlined">arrow_back</span>
               <span>Back</span>
@@ -512,20 +481,8 @@ export default function PredictPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="w-full py-section-gap bg-surface-container-low border-t border-border mt-section-gap">
-        <div className="px-margin-desktop max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-component-gap">
-          <div className="text-left">
-            <div className="font-title-card text-title-card text-on-surface">CorMetrics</div>
-            <p className="font-metadata text-metadata text-text-muted mt-2 max-w-md">© 2024 CorMetrics. For clinical decision support only. Not a replacement for professional medical advice.</p>
-          </div>
-          <div className="flex gap-8">
-            <a href="#" className="font-metadata text-metadata text-text-muted hover:text-on-surface transition-colors">Privacy Policy</a>
-            <a href="#" className="font-metadata text-metadata text-text-muted hover:text-on-surface transition-colors">Terms of Service</a>
-            <a href="#" className="font-metadata text-metadata text-text-muted hover:text-on-surface transition-colors">HIPAA Compliance</a>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
+    </RouteGuard>
   );
 }
