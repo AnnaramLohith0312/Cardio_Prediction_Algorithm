@@ -1,0 +1,17 @@
+{
+  "model_names": {
+    "Logistic Regression": "logistic_regression_model.pkl",
+    "SVM": "svm_model.pkl",
+    "KNN": "knn_model.pkl",
+    "Decision Tree": "decision_tree_model.pkl",
+    "Random Forest": "random_forest_model.pkl"
+  },
+  "scaling_required": {
+    "Logistic Regression": true,
+    "SVM": true,
+    "KNN": true,
+    "Decision Tree": false,
+    "Random Forest": false
+  },
+  "voting_method": "soft"
+}

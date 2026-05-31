@@ -8,34 +8,62 @@ type ResultProps = {
   onReset: () => void;
 };
 
+const formatProbability = (probability: number): string => {
+  const clamped = Math.min(Math.max(probability, 0), 1);
+  return (clamped * 100).toFixed(1) + "%";
+};
+
 export default function PredictionResult({ inputData, resultData, onReset }: ResultProps) {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
     // Small delay to trigger mount animations
     const timer = setTimeout(() => setMounted(true), 100);
+
+    // Validation check for probability range
+    const rawProb = resultData.probability !== undefined ? resultData.probability : resultData.risk_percentage;
+    if (rawProb < 0 || rawProb > 1) {
+      console.warn("Probability out of [0,1] range", rawProb);
+    }
+
     return () => clearTimeout(timer);
-  }, []);
+  }, [resultData]);
 
   const isHighRisk = resultData.prediction === 1;
   const riskColor = isHighRisk ? "var(--accent-red)" : "var(--accent-green)";
   const riskBg = isHighRisk ? "bg-[var(--accent-red)]/10" : "bg-[var(--accent-green)]/10";
-  const percentage = resultData.risk_percentage * 100;
+  
+  // Normalize exactly once
+  const rawProb = resultData.probability !== undefined ? resultData.probability : resultData.risk_percentage;
+  const normalizedProb = rawProb > 1 ? rawProb / 100 : rawProb;
+  const percentageStr = formatProbability(normalizedProb);
 
   // Semicircular SVG Gauge Logic
   // Arc length = PI * r. For r=40, PI*40 ~ 125.6
   const gaugeRadius = 40;
   const gaugeCircumference = Math.PI * gaugeRadius;
-  const strokeDashoffset = mounted ? gaugeCircumference - (percentage / 100) * gaugeCircumference : gaugeCircumference;
+  const strokeDashoffset = mounted ? gaugeCircumference - normalizedProb * gaugeCircumference : gaugeCircumference;
 
   const downloadReport = () => {
+    const probClamp = Math.min(Math.max(normalizedProb, 0), 1);
+    const formattedReportProb = (probClamp * 100).toFixed(1) + "%";
+
+    const breakdownText = resultData.model_breakdown && resultData.model_breakdown.length > 0
+      ? `\nMODEL CONSENSUS BREAKDOWN:\n` + resultData.model_breakdown.map((item: any) => {
+          const itemProb = (item.probability * 100).toFixed(1) + "%";
+          const itemRisk = item.prediction === 1 ? "HIGH RISK" : "LOW RISK";
+          return `- ${item.name}: ${itemRisk} (Probability: ${itemProb})`;
+        }).join("\n")
+      : "";
+
     const reportText = `
 CARDIOVASCULAR RISK PREDICTION REPORT
 ---------------------------------------
 Date: ${new Date().toLocaleString()}
 Risk Level: ${isHighRisk ? "HIGH RISK" : "LOW RISK"}
-Probability: ${percentage.toFixed(1)}%
+Risk probability: ${formattedReportProb}
 Model Used: ${resultData.model_name}
+${breakdownText}
 
 PATIENT PROFILE:
 Age: ${inputData.age_years} years
@@ -62,6 +90,13 @@ ${resultData.advice}
     URL.revokeObjectURL(url);
   };
 
+  const breakdown = resultData.model_breakdown || [];
+  const highRiskCount = breakdown.reduce((acc: number, item: any) => acc + (item.prediction === 1 ? 1 : 0), 0);
+  const totalModels = breakdown.length || 5;
+  const consensusString = breakdown.length > 0
+    ? `${highRiskCount} of ${totalModels} models predict High Risk (${(highRiskCount / totalModels * 100).toFixed(0)}% consensus)`
+    : "Ensemble Soft-Voting Prediction";
+
   return (
     <div className="w-full max-w-[600px] mx-auto animate-[fadeIn_0.5s_ease-out]">
       <div className={`p-8 rounded-[var(--radius-xl)] bg-[var(--surface-color)] border border-[var(--border-color)] shadow-[var(--shadow-lg)] flex flex-col items-center text-center transition-all ${isHighRisk ? 'border-[var(--accent-red)]/50' : 'border-[var(--accent-green)]/50'}`}>
@@ -84,7 +119,7 @@ ${resultData.advice}
           {isHighRisk ? "⚠ High Cardiovascular Risk Detected" : "✅ Low Cardiovascular Risk"}
         </h2>
         <p className="text-[var(--text-lg)] font-bold mb-8">
-          Probability: <span style={{ color: riskColor }}>{percentage.toFixed(1)}%</span>
+          Probability: <span style={{ color: riskColor }}>{percentageStr}</span>
         </p>
 
         {/* 3. Risk Probability Gauge */}
@@ -93,7 +128,7 @@ ${resultData.advice}
             {/* Background track */}
             <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="var(--border-color)" strokeWidth="12" strokeLinecap="round" />
             
-            {/* Color segments (using stroke-dasharray magic or simply coloring the whole arc) */}
+            {/* Color segments */}
             <path 
               d="M 10 50 A 40 40 0 0 1 90 50" 
               fill="none" 
@@ -108,13 +143,13 @@ ${resultData.advice}
             <defs>
               <linearGradient id="gauge-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
                 <stop offset="0%" stopColor="var(--accent-green)" />
-                <stop offset="50%" stopColor="#eab308" /> {/* Tailwind yellow-500 */}
+                <stop offset="50%" stopColor="#eab308" />
                 <stop offset="100%" stopColor="var(--accent-red)" />
               </linearGradient>
             </defs>
           </svg>
           <div className="absolute bottom-0 text-[var(--text-xl)] font-bold" style={{ color: riskColor }}>
-            {mounted ? percentage.toFixed(0) : 0}%
+            {mounted ? (normalizedProb * 100).toFixed(0) : 0}%
           </div>
         </div>
 
@@ -125,9 +160,62 @@ ${resultData.advice}
             {resultData.model_name}
           </span>
           <span className="px-3 py-1 bg-[var(--bg-color)] border border-[var(--border-color)] text-[var(--text-muted)] rounded-full text-sm font-bold">
-            AUC: 0.82 {/* Dummy metric if API doesn't return exact AUC, since we need to show a small badge */}
+            AUC: 0.82
           </span>
         </div>
+
+        {/* Ensemble Model Breakdown */}
+        {breakdown.length > 0 && (
+          <div className="w-full text-left mb-8 bg-[var(--bg-color)] border border-[var(--border-color)] rounded-[var(--radius-md)] p-5">
+            <div className="flex items-center justify-between mb-4 border-b border-[var(--border-color)] pb-3">
+              <div>
+                <h3 className="text-sm font-bold text-[var(--text-color)]">Ensemble Model Consensus</h3>
+                <p className="text-xs text-[var(--text-muted)] mt-0.5">{consensusString}</p>
+              </div>
+              <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                isHighRisk 
+                  ? "bg-[var(--accent-red)]/10 text-[var(--accent-red)] border border-[var(--accent-red)]/20" 
+                  : "bg-[var(--accent-green)]/10 text-[var(--accent-green)] border border-[var(--accent-green)]/20"
+              }`}>
+                {isHighRisk ? "High Risk Alert" : "Low Risk Alert"}
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              {breakdown.map((item: any, idx: number) => {
+                const itemIsHigh = item.prediction === 1;
+                const itemProbPercent = (item.probability * 100).toFixed(1);
+                
+                return (
+                  <div key={idx} className="flex flex-col gap-1.5">
+                    <div className="flex justify-between items-center text-xs">
+                      <span className="font-semibold text-[var(--text-color)]">{item.name}</span>
+                      <div className="flex items-center gap-2">
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-bold ${
+                          itemIsHigh 
+                            ? "bg-[var(--accent-red)]/10 text-[var(--accent-red)]" 
+                            : "bg-[var(--accent-green)]/10 text-[var(--accent-green)]"
+                        }`}>
+                          {itemIsHigh ? "High Risk" : "Low Risk"}
+                        </span>
+                        <span className="font-mono font-bold text-[var(--text-muted)]">{itemProbPercent}%</span>
+                      </div>
+                    </div>
+                    {/* Progress bar */}
+                    <div className="w-full h-1.5 bg-[var(--border-color)] rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full rounded-full transition-all duration-1000 ${
+                          itemIsHigh ? "bg-[var(--accent-red)]" : "bg-[var(--accent-green)]"
+                        }`}
+                        style={{ width: `${itemProbPercent}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         <hr className="w-full border-[var(--border-color)] mb-8" />
 

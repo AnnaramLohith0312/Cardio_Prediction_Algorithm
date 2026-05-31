@@ -1,10 +1,18 @@
-from pydantic import BaseModel, Field, model_validator, ConfigDict
+from pydantic import BaseModel, Field, model_validator, ConfigDict, field_validator
 from datetime import datetime
-from typing import Optional, Dict
+from typing import Optional, Dict, List
 
 class PredictRequest(BaseModel):
     age_years: int = Field(..., ge=1, le=100)
-    gender: int = Field(..., ge=1, le=2)
+    gender: int = Field(...)
+
+    @field_validator("gender")
+    @classmethod
+    def validate_gender(cls, v: int) -> int:
+        if v not in [1, 2]:
+            raise ValueError("Input should be 1 or 2")
+        return v
+
     height: float = Field(..., ge=130, le=220)
     weight: float = Field(..., ge=40, le=200)
     ap_hi: int = Field(..., ge=60, le=250)
@@ -18,8 +26,13 @@ class PredictRequest(BaseModel):
     @model_validator(mode="after")
     def validate_blood_pressure(self) -> "PredictRequest":
         if self.ap_hi <= self.ap_lo:
-            raise ValueError("Systolic BP (ap_hi) must be strictly greater than Diastolic BP (ap_lo).")
+            raise ValueError("Systolic pressure must be higher than diastolic pressure")
         return self
+
+class ModelBreakdownItem(BaseModel):
+    name: str
+    prediction: int
+    probability: float
 
 class PredictResponse(BaseModel):
     prediction: int
@@ -38,6 +51,7 @@ class PredictResponse(BaseModel):
     model_name: str
     record_id: int
     feature_impacts: Optional[Dict[str, float]] = None
+    model_breakdown: Optional[List[ModelBreakdownItem]] = None
 
 class PredictionRecord(BaseModel):
     id: int
@@ -72,6 +86,7 @@ class PredictionOutput(PredictResponse):
 
 class PredictionHistoryResponse(BaseModel):
     id: int
+    record_id: int  # Added to map DB property during history serialization
     age_years: float
     gender: int
     height: float
@@ -93,5 +108,6 @@ class PredictionHistoryResponse(BaseModel):
     bmi_category: str
     pp_hint: str
     created_at: datetime
+    model_breakdown: Optional[List[ModelBreakdownItem]] = None
 
     model_config = ConfigDict(from_attributes=True)

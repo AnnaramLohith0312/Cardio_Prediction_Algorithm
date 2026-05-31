@@ -479,26 +479,79 @@ print("\n" + "=" * 60)
 print("  STEP 7: FINAL MODEL SELECTION & SAVING")
 print("=" * 60)
 
-best_model_name = results_df.iloc[0]["Model"]
-print(f"✅ Best model: {best_model_name}")
+# Re-fit all models on the entire dataset
+print("▶ Preparing and fitting all ensemble models on the full dataset...")
+scaler.fit(X)
+X_scaled = scaler.transform(X)
 
-if best_model_name == "Random Forest":
-    final_model = RandomForestClassifier(
-        n_estimators=200, max_depth=12, random_state=42, n_jobs=-1)
-    final_model.fit(X, y)
-elif best_model_name == "Decision Tree":
-    final_model = DecisionTreeClassifier(
-        max_depth=7, min_samples_split=20, min_samples_leaf=10, random_state=42)
-    final_model.fit(X, y)
-else:
-    X_all_scaled = scaler.transform(X)
-    final_model  = trained_models[best_model_name]
-    final_model.fit(X_all_scaled, y)
+logistic_regression = LogisticRegression(max_iter=2000, random_state=42)
+logistic_regression.fit(X_scaled, y)
 
-joblib.dump(final_model, "cardio_final_model.pkl")
-joblib.dump(scaler,      "cardio_scaler.pkl")
-print("✅ Final model saved → cardio_final_model.pkl")
-print("✅ Scaler saved      → cardio_scaler.pkl")
+svm_base = LinearSVC(max_iter=3000, random_state=42)
+svm = CalibratedClassifierCV(svm_base, cv=3)
+svm.fit(X_scaled, y)
+
+knn = KNeighborsClassifier(n_neighbors=best_k)
+knn.fit(X_scaled, y)
+
+decision_tree = DecisionTreeClassifier(
+    max_depth=7, min_samples_split=20, min_samples_leaf=10, random_state=42)
+decision_tree.fit(X, y)
+
+random_forest = RandomForestClassifier(
+    n_estimators=200, max_depth=12, random_state=42, n_jobs=-1)
+random_forest.fit(X, y)
+
+# Ensure models directory exists
+os.makedirs("models", exist_ok=True)
+
+# Save all models separately
+joblib.dump(logistic_regression, "models/logistic_regression_model.pkl")
+joblib.dump(svm,                 "models/svm_model.pkl")
+joblib.dump(knn,                 "models/knn_model.pkl")
+joblib.dump(decision_tree,       "models/decision_tree_model.pkl")
+joblib.dump(random_forest,       "models/random_forest_model.pkl")
+joblib.dump(scaler,              "models/cardio_scaler.pkl")
+
+# Also save backups in the root of the backend folder to match script expectations
+joblib.dump(logistic_regression, "logistic_regression_model.pkl")
+joblib.dump(svm,                 "svm_model.pkl")
+joblib.dump(knn,                 "knn_model.pkl")
+joblib.dump(decision_tree,       "decision_tree_model.pkl")
+joblib.dump(random_forest,       "random_forest_model.pkl")
+joblib.dump(scaler,              "cardio_scaler.pkl")
+
+# Create and save ensemble metadata
+import json
+ensemble_metadata = {
+    "model_names": {
+        "Logistic Regression": "logistic_regression_model.pkl",
+        "SVM": "svm_model.pkl",
+        "KNN": "knn_model.pkl",
+        "Decision Tree": "decision_tree_model.pkl",
+        "Random Forest": "random_forest_model.pkl"
+    },
+    "scaling_required": {
+        "Logistic Regression": True,
+        "SVM": True,
+        "KNN": True,
+        "Decision Tree": False,
+        "Random Forest": False
+    },
+    "voting_method": "soft"
+}
+with open("models/ensemble_metadata.json", "w") as f:
+    json.dump(ensemble_metadata, f, indent=2)
+with open("ensemble_metadata.json", "w") as f:
+    json.dump(ensemble_metadata, f, indent=2)
+
+# Pointer to Random Forest for feature importance plots (matches Step 8 expectations)
+final_model = random_forest
+best_model_name = "Random Forest"
+
+print("✅ All ensemble models saved to models/ and backend root")
+print("✅ Scaler saved to models/cardio_scaler.pkl and backend root")
+print("✅ Ensemble metadata saved")
 
 
 # =================================================
@@ -632,40 +685,69 @@ try:
             "pulse_pressure" : pulse_pressure
         }])[feature_cols]
 
-        # Apply scaling only for scale-sensitive models
-        if best_model_name in ["Random Forest", "Decision Tree"]:
-            pred_input = input_data
-        else:
-            pred_input = scaler.transform(input_data)
-
-        prediction = final_model.predict(pred_input)[0]
-
-        try:
-            probability = final_model.predict_proba(pred_input)[0][1]
-            has_proba = True
-        except Exception:
-            has_proba = False
+        # Collect individual predictions & probabilities
+        scaled_input = scaler.transform(input_data)
+        
+        # Logistic Regression
+        prob_lr = float(logistic_regression.predict_proba(scaled_input)[0][1])
+        prob_lr = max(0.0, min(1.0, prob_lr))
+        pred_lr = 1 if prob_lr >= 0.5 else 0
+        
+        # SVM (using calibrated probability)
+        prob_svm = float(svm.predict_proba(scaled_input)[0][1])
+        prob_svm = max(0.0, min(1.0, prob_svm))
+        pred_svm = 1 if prob_svm >= 0.5 else 0
+        
+        # KNN
+        prob_knn = float(knn.predict_proba(scaled_input)[0][1])
+        prob_knn = max(0.0, min(1.0, prob_knn))
+        pred_knn = 1 if prob_knn >= 0.5 else 0
+        
+        # Decision Tree
+        prob_dt = float(decision_tree.predict_proba(input_data)[0][1])
+        prob_dt = max(0.0, min(1.0, prob_dt))
+        pred_dt = 1 if prob_dt >= 0.5 else 0
+        
+        # Random Forest
+        prob_rf = float(random_forest.predict_proba(input_data)[0][1])
+        prob_rf = max(0.0, min(1.0, prob_rf))
+        pred_rf = 1 if prob_rf >= 0.5 else 0
+        
+        # Compute Ensemble Average
+        ensemble_probability = (prob_lr + prob_svm + prob_knn + prob_dt + prob_rf) / 5.0
+        ensemble_probability = max(0.0, min(1.0, ensemble_probability))
+        ensemble_prediction = 1 if ensemble_probability >= 0.5 else 0
+        
+        # Count high risk votes
+        high_risk_votes = sum([pred_lr, pred_svm, pred_knn, pred_dt, pred_rf])
 
         print("\n" + "-" * 60)
-        print("  PREDICTION RESULT")
+        print("  ENSEMBLE PREDICTION RESULT")
         print("-" * 60)
-
-        if prediction == 1:
-            print("  🔴 Result  : HIGH RISK — Cardiovascular Disease Detected")
+        if ensemble_prediction == 1:
+            print("  🔴 Final Result       : HIGH RISK")
         else:
-            print("  🟢 Result  : LOW RISK  — No Cardiovascular Disease Detected")
-
-        if has_proba:
-            risk_pct = probability * 100
-            print(f"  📊 Risk    : {risk_pct:.1f}%")
-            if risk_pct >= 70:
-                print("  ⚠  Advice  : Strongly recommend consulting a cardiologist immediately.")
-            elif risk_pct >= 40:
-                print("  ⚠  Advice  : Consider lifestyle changes and schedule a medical checkup.")
-            else:
-                print("  ✅ Advice  : Maintain healthy habits. Annual checkups advised.")
-
-        print(f"  🤖 Model   : {best_model_name}")
+            print("  🟢 Final Result       : LOW RISK")
+            
+        print(f"  📊 Ensemble Prob      : {ensemble_probability * 100:.1f}%")
+        
+        print("\n  Model Breakdown:")
+        print(f"  - Logistic Regression : {'HIGH RISK' if pred_lr == 1 else 'LOW RISK '} ({prob_lr * 100:.1f}%)")
+        print(f"  - SVM                 : {'HIGH RISK' if pred_svm == 1 else 'LOW RISK '} ({prob_svm * 100:.1f}%)")
+        print(f"  - KNN                 : {'HIGH RISK' if pred_knn == 1 else 'LOW RISK '} ({prob_knn * 100:.1f}%)")
+        print(f"  - Decision Tree       : {'HIGH RISK' if pred_dt == 1 else 'LOW RISK '} ({prob_dt * 100:.1f}%)")
+        print(f"  - Random Forest       : {'HIGH RISK' if pred_rf == 1 else 'LOW RISK '} ({prob_rf * 100:.1f}%)")
+        
+        print(f"\n  Consensus             : {high_risk_votes}/5 models voted HIGH RISK")
+        print("-" * 60)
+        
+        # Advice
+        if ensemble_probability >= 0.70:
+            print("  ⚠  Advice  : Strongly recommend consulting a cardiologist immediately.")
+        elif ensemble_probability >= 0.40:
+            print("  ⚠  Advice  : Consider lifestyle changes and schedule a medical checkup.")
+        else:
+            print("  ✅ Advice  : Maintain healthy habits. Annual checkups advised.")
         print("-" * 60)
 
         again = input("\n  Predict another patient? (yes / no): ").strip().lower()
@@ -673,5 +755,5 @@ try:
             print("\n  Thank you for using the Cardiovascular Disease Predictor. Goodbye!")
             break
 
-except KeyboardInterrupt:
-    print("\n\n  Session ended by user.")
+except (KeyboardInterrupt, EOFError):
+    print("\n\n  Session ended.")

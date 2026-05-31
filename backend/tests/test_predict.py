@@ -31,7 +31,11 @@ def override_get_db():
         db.close()
 
 app.dependency_overrides[get_db] = override_get_db
-client = TestClient(app)
+
+@pytest.fixture
+def client():
+    with TestClient(app) as c:
+        yield c
 
 @pytest.fixture(autouse=True)
 def setup_db():
@@ -39,15 +43,12 @@ def setup_db():
     yield
     Base.metadata.drop_all(bind=engine)
 
-
-
-
-def test_health():
+def test_health(client):
     response = client.get("/api/v1/health")
     assert response.status_code == 200
     assert response.json()["status"] == "healthy"
 
-def test_auth_and_prediction():
+def test_auth_and_prediction(client):
     # 1. Sign Up
     signup_data = {
         "email": "test@cardio.com",

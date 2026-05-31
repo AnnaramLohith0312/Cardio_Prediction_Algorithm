@@ -9,7 +9,10 @@ interface ResultCardProps {
 }
 
 export default function ResultCard({ percentage, label, advice, modelName }: ResultCardProps) {
-  const isHigh = percentage >= 50;
+  // Normalize the input percentage (ensure it is 0.0 - 1.0 internally, then multiply by 100 for display)
+  const normalized = percentage > 1 ? percentage / 100 : percentage;
+  const displayPercentage = normalized * 100;
+  const isHigh = displayPercentage >= 50;
 
   return (
     <div className="bg-surface-container-lowest border border-outline-variant/30 rounded-xl p-8 shadow-sm flex flex-col items-center text-center w-full">
@@ -34,7 +37,7 @@ export default function ResultCard({ percentage, label, advice, modelName }: Res
         </span>
       </div>
       
-      <RiskGauge percentage={percentage} />
+      <RiskGauge percentage={Number(displayPercentage.toFixed(1))} />
       
       <AdviceCard advice={advice} />
     </div>

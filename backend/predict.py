@@ -46,13 +46,17 @@ def main():
         
         try:
             probability = float(model.predict_proba(pred_input)[0][1])
-            risk_percentage = round(probability * 100, 1)
+            # Defensive clamp to [0.0, 1.0] range
+            probability = max(0.0, min(1.0, probability))
+            # Validation hook
+            assert 0.0 <= probability <= 1.0, f"probability out of range: {probability}"
+            risk_percentage = round(probability, 4)
         except Exception:
-            risk_percentage = 70.0 if prediction == 1 else 15.0
+            risk_percentage = 0.7000 if prediction == 1 else 0.1500
             
         risk_label = "High Risk" if prediction == 1 else "Low Risk"
-        advice = "Strongly recommend consulting a cardiologist immediately." if risk_percentage >= 70 else (
-            "Consider lifestyle changes and schedule a medical checkup." if risk_percentage >= 40 else
+        advice = "Strongly recommend consulting a cardiologist immediately." if risk_percentage >= 0.7 else (
+            "Consider lifestyle changes and schedule a medical checkup." if risk_percentage >= 0.4 else
             "Maintain healthy habits. Annual checkups advised."
         )
         

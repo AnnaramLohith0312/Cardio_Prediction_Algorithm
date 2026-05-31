@@ -19,29 +19,38 @@ async def lifespan(app: FastAPI):
     # Initialize database tables
     create_tables()
 
-    # Determine dynamic path to load model/scaler
+    # Determine dynamic paths for models folder fallback
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    model_path = os.path.join(base_dir, "models", "cardio_final_model.pkl")
-    scaler_path = os.path.join(base_dir, "models", "cardio_scaler.pkl")
+    models_dir = os.path.join(base_dir, "models")
+    if not os.path.exists(models_dir):
+        models_dir = os.path.join(base_dir, "app", "models")
+    if not os.path.exists(models_dir):
+        models_dir = base_dir
 
-    # Fallbacks if running from a nested directory structure
-    if not os.path.exists(model_path):
-        model_path = os.path.join(base_dir, "app", "models", "cardio_final_model.pkl")
-    if not os.path.exists(scaler_path):
-        scaler_path = os.path.join(base_dir, "app", "models", "cardio_scaler.pkl")
-
-    # Final settings backup fallbacks
-    if not os.path.exists(model_path):
-        model_path = settings.MODEL_PATH
-    if not os.path.exists(scaler_path):
-        scaler_path = settings.SCALER_PATH
+    def load_bin(filename):
+        path = os.path.join(models_dir, filename)
+        if not os.path.exists(path):
+            path = os.path.join(base_dir, filename)
+        return joblib.load(path)
 
     try:
-        app.state.model = joblib.load(model_path)
-        app.state.scaler = joblib.load(scaler_path)
+        app.state.model_lr = load_bin("logistic_regression_model.pkl")
+        app.state.model_svm = load_bin("svm_model.pkl")
+        app.state.model_knn = load_bin("knn_model.pkl")
+        app.state.model_dt = load_bin("decision_tree_model.pkl")
+        app.state.model_rf = load_bin("random_forest_model.pkl")
+        app.state.scaler = load_bin("cardio_scaler.pkl")
+        
+        # Backward compatibility fallback
+        app.state.model = app.state.model_rf
     except Exception as e:
-        app.state.model = None
+        app.state.model_lr = None
+        app.state.model_svm = None
+        app.state.model_knn = None
+        app.state.model_dt = None
+        app.state.model_rf = None
         app.state.scaler = None
+        app.state.model = None
         # Print to stderr for tracking during dev/startup
         import sys
         print(f"CRITICAL: Failed to load machine learning models on startup: {str(e)}", file=sys.stderr)
