@@ -9,30 +9,7 @@ from app.schemas.prediction import PredictRequest, PredictResponse, ModelBreakdo
 from app.models.prediction import Prediction
 from app.db import crud
 
-from jose import jwt, JWTError
-from fastapi.security import OAuth2PasswordBearer
-from app.core.config import settings
-
-oauth2_scheme_optional = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/auth/login",
-    auto_error=False
-)
-
-def get_optional_current_user(
-    db: Session = Depends(get_db), token: str = Depends(oauth2_scheme_optional)
-):
-    if not token:
-        return None
-    try:
-        payload = jwt.decode(
-            token, settings.SECRET_KEY, algorithms=["HS256"]
-        )
-        email: str = payload.get("sub")
-        if email is None:
-            return None
-        return crud.get_user_by_email(db, email=email)
-    except JWTError:
-        return None
+from app.core.dependencies import get_current_user
 
 router = APIRouter()
 
@@ -41,7 +18,7 @@ def predict_cardio_risk(
     payload: PredictRequest,
     request: Request,
     db: Session = Depends(get_db),
-    current_user: Optional[any] = Depends(get_optional_current_user)
+    current_user: any = Depends(get_current_user)
 ) -> PredictResponse:
     """
     Accepts clinical patient data, runs a risk assessment model loaded at startup,

@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from typing import List
 from app.core.dependencies import get_db, get_current_user
 from app.db import crud
+from app.db.models import PredictionHistory
 from app.schemas import prediction as pred_schemas
 from app.schemas import user as user_schemas
 
@@ -23,10 +24,15 @@ def get_history_by_id(
     db: Session = Depends(get_db),
     current_user: user_schemas.UserResponse = Depends(get_current_user)
 ):
-    prediction = crud.get_user_prediction_by_id(db, user_id=current_user.id, prediction_id=record_id)
+    prediction = db.query(PredictionHistory).filter(PredictionHistory.id == record_id).first()
     if not prediction:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Prediction record not found"
+        )
+    if prediction.user_id != current_user.id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Access denied"
         )
     return prediction

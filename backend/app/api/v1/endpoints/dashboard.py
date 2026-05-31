@@ -6,24 +6,31 @@ import numpy as np
 from typing import List
 
 from app.db.session import get_db
-from app.models.prediction import Prediction
+from app.db.models import PredictionHistory
 from app.schemas.dashboard import DashboardStatsResponse, KPIStats, ModelStat, RiskFactor, RecentPrediction
 from app.core.logger import logger
+from app.core.dependencies import get_current_user
+from app.schemas import user as user_schemas
 
 router = APIRouter()
 
 @router.get("/stats", response_model=DashboardStatsResponse)
-def get_dashboard_stats(db: Session = Depends(get_db)) -> DashboardStatsResponse:
+def get_dashboard_stats(
+    db: Session = Depends(get_db),
+    current_user: user_schemas.UserResponse = Depends(get_current_user)
+) -> DashboardStatsResponse:
     """
-    Returns aggregated dashboard stats, including overall KPIs, model performance,
+    Returns aggregated dashboard stats scoped to the authenticated user, including overall KPIs, model performance,
     Pearson correlation risk factors, and the 10 most recent predictions.
     """
     try:
-        # 1. Calculate overall KPIs
-        total_predictions = db.query(func.count(Prediction.id)).scalar() or 0
-        high_risk_count = db.query(func.count(Prediction.id)).filter(Prediction.prediction == 1).scalar() or 0
-        low_risk_count = db.query(func.count(Prediction.id)).filter(Prediction.prediction == 0).scalar() or 0
-        avg_risk_probability = db.query(func.avg(Prediction.risk_probability)).scalar()
+        user_id = current_user.id
+        
+        # 1. Calculate overall KPIs for current user
+        total_predictions = db.query(func.count(PredictionHistory.id)).filter(PredictionHistory.user_id == user_id).scalar() or 0
+        high_risk_count = db.query(func.count(PredictionHistory.id)).filter(PredictionHistory.user_id == user_id, PredictionHistory.prediction == 1).scalar() or 0
+        low_risk_count = db.query(func.count(PredictionHistory.id)).filter(PredictionHistory.user_id == user_id, PredictionHistory.prediction == 0).scalar() or 0
+        avg_risk_probability = db.query(func.avg(PredictionHistory.risk_percentage)).filter(PredictionHistory.user_id == user_id).scalar()
         
         avg_risk_probability = round(float(avg_risk_probability), 4) if avg_risk_probability is not None else 0.0
 
@@ -43,14 +50,14 @@ def get_dashboard_stats(db: Session = Depends(get_db)) -> DashboardStatsResponse
                 recent=[]
             )
 
-        # 2. Calculate model performance (accuracy per distinct model_name)
-        # Using a raw SQL query via db.execute to handle division by zero and CASE statements cleanly
+        # 2. Calculate model performance (accuracy per distinct model_name) for current user
         from sqlalchemy import text
+        # Because SQLite might not like parameters in this raw query nicely if we don't bind, let's use text with bindparams
         model_results = db.execute(text(
             "SELECT model_name, COUNT(*) as total, "
-            "SUM(CASE WHEN (prediction = 1 AND risk_probability >= 0.5) OR (prediction = 0 AND risk_probability < 0.5) THEN 1 ELSE 0 END) as correct "
-            "FROM predictions GROUP BY model_name"
-        )).fetchall()
+            "SUM(CASE WHEN (prediction = 1 AND risk_percentage >= 0.5) OR (prediction = 0 AND risk_percentage < 0.5) THEN 1 ELSE 0 END) as correct "
+            "FROM prediction_history WHERE user_id = :user_id GROUP BY model_name"
+        ), {"user_id": user_id}).fetchall()
 
         models_list = []
         for row in model_results:
@@ -59,16 +66,16 @@ def get_dashboard_stats(db: Session = Depends(get_db)) -> DashboardStatsResponse
             models_list.append(ModelStat(name=name, accuracy=accuracy))
         models_list.sort(key=lambda x: x.accuracy, reverse=True)
 
-        # 3. Calculate Risk Factor Importance using Pearson Correlation
+        # 3. Calculate Risk Factor Importance using Pearson Correlation for current user
         records = db.query(
-            Prediction.ap_hi,
-            Prediction.age_years,
-            Prediction.bmi,
-            Prediction.cholesterol,
-            Prediction.gluc,
-            Prediction.pulse_pressure,
-            Prediction.prediction
-        ).all()
+            PredictionHistory.ap_hi,
+            PredictionHistory.age_years,
+            PredictionHistory.bmi,
+            PredictionHistory.cholesterol,
+            PredictionHistory.gluc,
+            PredictionHistory.pulse_pressure,
+            PredictionHistory.prediction
+        ).filter(PredictionHistory.user_id == user_id).all()
 
         features = ["ap_hi", "age_years", "bmi", "cholesterol", "gluc", "pulse_pressure"]
         risk_factors_list = []
@@ -96,11 +103,11 @@ def get_dashboard_stats(db: Session = Depends(get_db)) -> DashboardStatsResponse
                     if pd.isna(corr):
                         corr = 0.0
                 risk_factors_list.append(RiskFactor(feature=f, importance=round(abs(float(corr)), 4)))
-        
+
         risk_factors_list.sort(key=lambda x: x.importance, reverse=True)
 
-        # 4. Fetch the 10 most recent predictions
-        recent_records = db.query(Prediction).order_by(Prediction.created_at.desc()).limit(10).all()
+        # 4. Fetch the 10 most recent predictions for current user
+        recent_records = db.query(PredictionHistory).filter(PredictionHistory.user_id == user_id).order_by(PredictionHistory.created_at.desc()).limit(10).all()
         recent_list = []
         for r in recent_records:
             recent_list.append(RecentPrediction(
@@ -110,8 +117,8 @@ def get_dashboard_stats(db: Session = Depends(get_db)) -> DashboardStatsResponse
                 ap_hi=r.ap_hi,
                 ap_lo=r.ap_lo,
                 prediction=r.prediction,
-                risk_probability=r.risk_probability,
-                risk_level=r.risk_level,
+                risk_probability=r.risk_percentage,
+                risk_level=r.risk_label,
                 model_name=r.model_name,
                 created_at=r.created_at.isoformat() + "Z"
             ))

@@ -61,6 +61,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else {
         setUser(null);
       }
+      // Security: Clear any leftover prediction cache on startup if not logged in
+      if (!token) {
+        sessionStorage.removeItem("cormetrics_result");
+        sessionStorage.removeItem("cormetrics_input");
+      }
       setIsLoading(false);
     };
     checkAuth();
@@ -68,6 +73,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const login = async (email: string, password?: string) => {
     setIsLoading(true);
+    // Security: clear previous session's predictions
+    sessionStorage.removeItem("cormetrics_result");
+    sessionStorage.removeItem("cormetrics_input");
+
     try {
       const formData = new URLSearchParams();
       formData.append("username", email);
@@ -105,6 +114,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loginWithGoogle = async (credential: string) => {
     setIsLoading(true);
+    // Security: clear previous session's predictions
+    sessionStorage.removeItem("cormetrics_result");
+    sessionStorage.removeItem("cormetrics_input");
+
     try {
       const res = await fetch(`${API_BASE_URL}/api/v1/auth/google`, {
         method: "POST",
@@ -152,6 +165,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const signup = async (email: string, name: string, password?: string) => {
     setIsLoading(true);
+    // Security: clear previous session's predictions
+    sessionStorage.removeItem("cormetrics_result");
+    sessionStorage.removeItem("cormetrics_input");
+
     try {
       // Generate clean alphanumeric + underscore username
       let username = email.split("@")[0].replace(/[^a-zA-Z0-9_]/g, "");
@@ -200,6 +217,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       setUser(null);
       localStorage.removeItem("cardio_user");
       localStorage.removeItem("cardio_token");
+      sessionStorage.removeItem("cormetrics_result");
+      sessionStorage.removeItem("cormetrics_input");
     } finally {
       setIsLoading(false);
     }
