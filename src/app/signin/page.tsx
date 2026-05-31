@@ -17,10 +17,8 @@ function SignInFormContent() {
   const [rememberMe, setRememberMe] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
     const savedEmail = localStorage.getItem("cardio_remembered_email");
     if (savedEmail) {
       setEmail(savedEmail);
@@ -77,323 +75,168 @@ function SignInFormContent() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-satoshi bg-[#0b1220] overflow-x-hidden select-none">
-      
-      {/* Premium styles: custom fonts, ECG line drawing, and autofill overrides */}
+    <div className="bg-background text-on-surface selection:bg-teal-accent/30 min-h-screen flex flex-col font-body-main">
       <style dangerouslySetInnerHTML={{__html: `
-        @import url('https://api.fontshare.com/v2/css?f[]=satoshi@400,500,600,700&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
-
-        .font-satoshi {
-          font-family: 'Satoshi', sans-serif;
-        }
-        .font-display {
-          font-family: 'Instrument Serif', Georgia, serif;
-        }
-
-        @keyframes draw {
-          0% { stroke-dashoffset: 1000; }
-          100% { stroke-dashoffset: 0; }
-        }
-        .ecg-anim-path {
-          stroke-dasharray: 1000;
-          stroke-dashoffset: 1000;
-          animation: draw 5s linear infinite;
-        }
-
-        /* Prevent ugly yellow browser autofill box-shadows */
-        input:-webkit-autofill,
-        input:-webkit-autofill:hover, 
-        input:-webkit-autofill:focus {
-          -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
-          -webkit-text-fill-color: #0f172a !important;
-          border: 1px solid #e2e8f0 !important;
-          caret-color: #0f766e !important;
-          transition: background-color 5000s ease-in-out 0s;
+        .ecg-grid {
+            background-size: 40px 40px;
+            background-image: linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px);
         }
       `}} />
-
-      {/* --- TOP CHROM NAVIGATION HEADER --- */}
-      <header className="h-[64px] bg-[#0b1220] border-b border-white/5 z-40 fixed top-0 left-0 right-0 px-4 sm:px-8 flex justify-between items-center">
-        {/* Left Logo */}
-        <Link href="/" className="flex items-center gap-2.5 min-h-[44px] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0f766e] focus-visible:outline-offset-2 rounded px-2">
-          <svg className="w-6 h-6 text-[#dc2626]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-            <path d="M3.22 12H7.5l1.5-2.5L11 14.5l1.5-3.5 1.5 2h4.78" stroke="#ffffff" strokeWidth="1.5" />
-          </svg>
-          <span className="font-semibold text-lg text-white tracking-wide">
-            CardioSense AI
-          </span>
-        </Link>
-
-        {/* Right Nav Action */}
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-slate-400 hidden sm:inline-block">Don't have an account?</span>
-          <Link 
-            href="/signup" 
-            className="px-5 py-2 border border-[#0f766e] text-white hover:bg-[#0f766e]/20 bg-[#0f766e] lg:bg-transparent lg:text-[#0f766e] font-bold rounded-lg text-xs tracking-wide transition-all min-h-[44px] flex items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0f766e] focus-visible:outline-offset-2"
-          >
-            Create account
-          </Link>
-        </div>
-      </header>
-
-      {/* --- MAIN SPLIT CONTAINER --- */}
-      <div className="flex-1 flex flex-col lg:flex-row mt-[64px]">
-        
-        {/* LEFT BRAND PANEL (Visible as top header on mobile/tablet, full screen split on desktop) */}
-        <section className="w-full lg:w-[55%] bg-[#0b1220] relative flex flex-col justify-between p-8 sm:p-12 lg:p-16 overflow-hidden border-b lg:border-b-0 lg:border-r border-white/5">
-          {/* Subtle Radial Glow */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(15,118,110,0.12)_0%,rgba(220,38,38,0.03)_60%,transparent_100%)] pointer-events-none"></div>
-
-          {/* ECG Line Motif */}
-          <div className="absolute inset-x-0 top-1/3 h-40 opacity-40 pointer-events-none hidden lg:block">
-            <svg className="w-full h-full text-slate-800/20 overflow-visible" viewBox="0 0 400 100" fill="none">
-              <path d="M 0 50 Q 80 50 100 50 L 115 30 L 130 75 L 145 15 L 160 55 L 175 50 Q 200 50 400 50" stroke="rgba(255,255,255,0.02)" strokeWidth="2" strokeLinecap="round" />
-              <path 
-                className="ecg-anim-path"
-                d="M 0 50 Q 80 50 100 50 L 115 30 L 130 75 L 145 15 L 160 55 L 175 50 Q 200 50 400 50" 
-                stroke="#dc2626" 
-                strokeWidth="2" 
-                strokeLinecap="round" 
-              />
-            </svg>
-          </div>
-
-          <div className="hidden lg:block"></div> {/* Spacer */}
-
-          {/* Marketing Copy and Trust Indicators */}
-          <div className="space-y-6 sm:space-y-8 relative z-10 my-auto lg:my-0">
-            <div className="space-y-3 sm:space-y-4">
-              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-tight text-white leading-tight font-satoshi max-w-lg">
-                Precision cardiovascular screening, built for proactive care.
-              </h1>
-              <p className="text-sm sm:text-[15px] text-slate-400 leading-relaxed max-w-md font-medium">
-                CardioSense AI leverages state-of-the-art predictive algorithms to aid clinicians in early identification of cardiovascular risks.
+      <main className="flex-grow flex flex-col md:flex-row min-h-screen">
+        {/* Left Panel: Brand Storytelling */}
+        <section className="relative hidden md:flex md:w-1/2 bg-surface-container-lowest overflow-hidden flex-col justify-between p-margin-desktop border-r border-border group">
+          {/* ECG Grid Background Overlay */}
+          <div className="absolute inset-0 ecg-grid opacity-20 pointer-events-none"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-teal-accent/5 via-transparent to-transparent pointer-events-none"></div>
+          
+          <div className="relative z-10">
+            <h1 className="font-headline-page text-headline-page text-primary font-bold">CorMetrics</h1>
+            <div className="mt-section-gap max-w-md">
+              <h2 className="font-display-hero text-[48px] leading-tight text-on-surface mb-6">
+                Empowering early cardiovascular detection.
+              </h2>
+              <p className="font-body-main text-text-secondary">
+                Harnessing advanced neural networks to provide clinicians with unparalleled diagnostic precision and predictive insights.
               </p>
             </div>
+          </div>
 
-            {/* Credibility Bullets with Minimalist Icons */}
-            <div className="space-y-3 pt-2">
-              <div className="flex items-center gap-3 text-slate-200 font-semibold text-sm">
-                <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-[#0f766e]/20 text-[#0f766e]">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </span>
-                <span>AI-powered risk prediction</span>
-              </div>
-              <div className="flex items-center gap-3 text-slate-200 font-semibold text-sm">
-                <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-[#0f766e]/20 text-[#0f766e]">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </span>
-                <span>Secure patient insights</span>
-              </div>
-              <div className="flex items-center gap-3 text-slate-200 font-semibold text-sm">
-                <span className="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-full bg-[#0f766e]/20 text-[#0f766e]">
-                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" strokeWidth="3.5" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                </span>
-                <span>Faster early screening decisions</span>
+          {/* Medical Visual Logic */}
+          <div className="relative z-10 mt-auto">
+            <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-border bg-surface-container shadow-2xl transition-transform duration-500 ease-out group-hover:scale-[1.02]">
+              <img 
+                src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3Fy4EoTZNMMtnuMCQiaeJrWQgWKCXkh9ZFynvVzznyLOwWBIDutZdpvUIs1Jkg_wjomjuMJtT6E8TCuzQpHsCsRYooeWHcY4LGuD2r0toWx9AWPiifFw2uEFEuXC3GrptU12R9AmcerbkFp4ejlBUdwWg-En7azSR5V3fbpXesYtYKS2fdFf2DvRBgw_74JI4jhr4WChiIkqhgWAxI3ym9V4MbSdOC-nVw8MNnTIbuCjqdyxqSo80sXms_Cl0Av9lmHz388Ehklvs" 
+                className="w-full h-full object-cover transition-transform duration-[2s] ease-out group-hover:scale-105"
+                alt="Medical diagnostic interface"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-surface-container-lowest/80 to-transparent"></div>
+              <div className="absolute bottom-6 left-6 flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full bg-teal-accent/20 flex items-center justify-center backdrop-blur-md border border-teal-accent/30">
+                  <span className="material-symbols-outlined text-teal-accent" style={{ fontVariationSettings: "'FILL' 1" }}>monitor_heart</span>
+                </div>
+                <div>
+                  <p className="font-label-caps text-label-caps text-teal-accent">REAL-TIME ANALYSIS</p>
+                  <p className="font-title-card text-title-card text-white">Clinical Intelligence Engine</p>
+                </div>
               </div>
             </div>
-
-            <div className="pt-6 border-t border-white/5 text-[11px] sm:text-[12px] text-[#0f766e] font-bold uppercase tracking-wider">
-              Designed for modern preventive healthcare teams.
+            
+            <div className="mt-8 flex gap-8 items-center opacity-60">
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">verified_user</span>
+                <span className="font-metadata text-metadata">HIPAA Compliant</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="material-symbols-outlined text-[18px]">security</span>
+                <span className="font-metadata text-metadata">AES-256 Encrypted</span>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* RIGHT SIGN-IN PANEL (Clean white background with premium typography) */}
-        <section className="w-full lg:w-[45%] flex items-center justify-center p-6 sm:p-12 lg:p-16 bg-white">
-          <div className={`w-full max-w-[440px] flex flex-col justify-center transition-all duration-500 ease-out ${
-            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
-          }`}>
-            
-            {/* Header / Brand Sub-heading */}
-            <div className="mb-8">
-              <span className="inline-flex items-center gap-1.5 text-[#0f766e] font-bold text-xs uppercase tracking-wider mb-2 font-satoshi">
-                <svg className="w-4 h-4 text-[#dc2626]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
-                </svg>
-                CardioSense AI Secure Portal
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-semibold font-display tracking-tight text-[#0f172a] mb-2.5">
-                Welcome back
-              </h2>
-              <p className="text-sm sm:text-[15px] font-medium leading-relaxed text-[#475569]">
-                Sign in to access predictions, dashboards, and patient screening insights.
-              </p>
+        {/* Right Panel: Sign In Form */}
+        <section className="flex-grow flex items-center justify-center p-margin-mobile md:p-margin-desktop bg-background">
+          <div className="w-full max-w-[420px]">
+            {/* Mobile Logo */}
+            <div className="md:hidden mb-12">
+              <h1 className="font-headline-page text-headline-page text-primary font-bold text-center">CorMetrics</h1>
             </div>
+            
+            <header className="mb-10">
+              <h2 className="font-headline-section text-headline-section text-on-surface mb-2">Welcome Back</h2>
+              <p className="font-body-compact text-text-muted">Enter your credentials to access the diagnostic dashboard.</p>
+            </header>
 
-            {/* Error Message banner */}
             {error && (
-              <div className="mb-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-start gap-2.5 shadow-sm">
-                <svg className="w-5 h-5 flex-shrink-0 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+              <div className="mb-6 p-4 rounded-lg bg-risk-high/10 border border-risk-high text-risk-high text-sm font-semibold flex items-start gap-2.5">
+                <span className="material-symbols-outlined">error</span>
                 <span>{error}</span>
               </div>
             )}
 
-            {/* Credentials Sign In Form */}
-            <form onSubmit={handleSubmit} className="space-y-5">
-              
-              {/* Email Input */}
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="space-y-2">
-                <label 
-                  htmlFor="email-input" 
-                  className="text-sm font-semibold text-[#0f172a] block"
-                >
-                  Email address
-                </label>
+                <label className="font-label-caps text-label-caps text-on-surface-variant ml-1" htmlFor="email">EMAIL ADDRESS</label>
                 <div className="relative group">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#0f766e] transition-colors pointer-events-none">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                    </svg>
-                  </span>
-                  <input
-                    id="email-input"
-                    type="email"
-                    required
-                    placeholder="name@medical-institution.com"
+                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-[20px] group-focus-within:text-teal-accent transition-colors">mail</span>
+                  <input 
+                    id="email" 
+                    type="email" 
                     value={email}
-                    onChange={(e) => {
-                      setEmail(e.target.value);
-                      if (error) setError(null);
-                    }}
-                    className="w-full pl-12 pr-4 h-12 rounded-lg bg-white border border-[#e2e8f0] text-[#0f172a] placeholder-[#64748b] focus:border-[#0f766e] focus:ring-4 focus:ring-[#0f766e]/10 outline-none text-sm font-medium transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0f766e] focus-visible:outline-offset-2"
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-surface-container-high border border-border focus:border-teal-accent focus:ring-1 focus:ring-teal-accent/50 rounded-xl py-4 pl-12 pr-4 text-on-surface placeholder:text-text-muted/50 transition-all outline-none" 
+                    placeholder="dr.smith@cardiology.com" 
                   />
                 </div>
               </div>
-
-              {/* Password Input */}
+              
               <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <label 
-                    htmlFor="password-input" 
-                    className="text-sm font-semibold text-[#0f172a]"
-                  >
-                    Password
-                  </label>
-                  <button 
-                    type="button"
-                    onClick={() => alert("Password reset is managed by the system administrator. Please contact IT support.")}
-                    className="text-xs font-semibold text-[#0f766e] hover:text-[#0d9488] hover:underline transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0f766e] focus-visible:outline-offset-2 rounded"
-                  >
-                    Forgot password?
-                  </button>
+                <div className="flex justify-between items-center px-1">
+                  <label className="font-label-caps text-label-caps text-on-surface-variant" htmlFor="password">PASSWORD</label>
+                  <a className="font-metadata text-metadata text-primary hover:underline transition-all" href="#">Forgot password?</a>
                 </div>
                 <div className="relative group">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-[#0f766e] transition-colors pointer-events-none">
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                    </svg>
-                  </span>
-                  <input
-                    id="password-input"
-                    type={showPassword ? "text" : "password"}
-                    required
-                    placeholder="••••••••"
+                  <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-text-muted text-[20px] group-focus-within:text-teal-accent transition-colors">lock</span>
+                  <input 
+                    id="password" 
+                    type={showPassword ? "text" : "password"} 
                     value={password}
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                      if (error) setError(null);
-                    }}
-                    className="w-full pl-12 pr-12 h-12 rounded-lg bg-white border border-[#e2e8f0] text-[#0f172a] placeholder-[#64748b] focus:border-[#0f766e] focus:ring-4 focus:ring-[#0f766e]/10 outline-none text-sm font-medium transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0f766e] focus-visible:outline-offset-2"
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-surface-container-high border border-border focus:border-teal-accent focus:ring-1 focus:ring-teal-accent/50 rounded-xl py-4 pl-12 pr-12 text-on-surface placeholder:text-text-muted/50 transition-all outline-none" 
+                    placeholder="••••••••" 
                   />
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#0f766e] transition-colors min-h-[36px] min-w-[36px] flex items-center justify-center rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0f766e]"
-                    aria-label={showPassword ? "Hide password" : "Show password"}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted hover:text-teal-accent transition-colors"
                   >
-                    {showPassword ? (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                      </svg>
-                    ) : (
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.8" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                      </svg>
-                    )}
+                    <span className="material-symbols-outlined text-[20px]">
+                      {showPassword ? "visibility_off" : "visibility"}
+                    </span>
                   </button>
                 </div>
               </div>
-
-              {/* Remember Me */}
-              <div className="flex items-center gap-3">
-                <div className="relative flex items-center min-h-[44px]">
-                  <input
-                    id="remember-checkbox"
-                    type="checkbox"
-                    checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-5 h-5 rounded border-[#e2e8f0] text-[#0f766e] focus:ring-[#0f766e]/30 cursor-pointer accent-[#0f766e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0f766e]"
-                  />
-                </div>
-                <label 
-                  htmlFor="remember-checkbox" 
-                  className="text-sm cursor-pointer select-none font-medium text-[#475569]"
-                >
-                  Remember me for 30 days
-                </label>
+              
+              <div className="flex items-center gap-3 px-1">
+                <input 
+                  id="remember" 
+                  type="checkbox" 
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                  className="w-5 h-5 rounded border-border bg-surface-container-high text-teal-accent focus:ring-teal-accent/30 focus:ring-offset-background transition-all cursor-pointer" 
+                />
+                <label className="font-body-compact text-text-secondary cursor-pointer select-none" htmlFor="remember">Keep me signed in for 30 days</label>
               </div>
-
-              {/* Primary CTA Submit */}
-              <button
+              
+              <button 
                 type="submit"
                 disabled={loading}
-                className="w-full h-12 bg-[#0f766e] hover:bg-[#0d9488] active:scale-[0.98] text-white font-bold rounded-lg shadow-sm hover:shadow transition-all flex items-center justify-center gap-2 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0f766e] focus-visible:outline-offset-3"
+                className="w-full bg-teal-accent hover:bg-teal-accent/90 active:scale-[0.98] disabled:opacity-50 text-white font-title-card py-4 rounded-xl transition-all shadow-lg shadow-teal-accent/10 flex items-center justify-center gap-2"
               >
-                {loading ? (
-                  <>
-                    <svg className="w-5 h-5 animate-spin text-white" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-                    </svg>
-                    <span>Signing in...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>Sign In</span>
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2.5" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
-                    </svg>
-                  </>
-                )}
+                {loading ? "Signing In..." : "Sign In"}
+                {!loading && <span className="material-symbols-outlined text-[20px]">arrow_forward</span>}
               </button>
             </form>
 
-            {/* Or Divider */}
-            <div className="relative my-7 flex items-center justify-center">
+            <div className="relative my-10">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-[#e2e8f0]"></div>
+                <div className="w-full border-t border-border"></div>
               </div>
-              <span className="relative px-4 text-xs font-semibold uppercase tracking-wider bg-white text-[#94a3b8]">
-                OR
-              </span>
+              <div className="relative flex justify-center text-label-caps">
+                <span className="bg-background px-4 text-text-muted">OR CONTINUE WITH</span>
+              </div>
             </div>
 
-            {/* Google Sign-in Button */}
-            <div className="relative w-full h-12 mb-6 group focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#0f766e] focus-visible:outline-offset-2 rounded-lg overflow-hidden">
-              <button 
-                type="button"
-                className="absolute inset-0 w-full h-full flex items-center justify-center gap-3 border bg-white border-[#e2e8f0] text-[#374151] hover:bg-[#f8fafc] hover:border-[#cbd5e1] active:scale-[0.98] font-semibold text-[15px] rounded-lg transition-all cursor-pointer"
-                aria-label="Sign in with Google"
-              >
-                <svg className="w-5 h-5 flex-shrink-0" viewBox="0 0 24 24">
-                  <path fill="#EA4335" d="M12 5.04c1.66 0 3.2.57 4.38 1.69l3.27-3.27C17.67 1.54 15.01 1 12 1 7.35 1 3.39 3.65 1.5 7.5l3.86 3C6.27 7.7 8.9 5.04 12 5.04z" />
-                  <path fill="#4285F4" d="M23.49 12.27c0-.81-.07-1.59-.2-2.36H12v4.51h6.46c-.28 1.48-1.12 2.74-2.38 3.59l3.7 2.87c2.16-1.99 3.41-4.92 3.41-8.61z" />
-                  <path fill="#FBBC05" d="M5.36 14.5c-.24-.72-.38-1.5-.38-2.3s.14-1.58.38-2.3L1.5 6.9c-.83 1.66-1.3 3.52-1.3 5.5s.47 3.84 1.3 5.5l3.86-2.9z" />
-                  <path fill="#34A853" d="M12 23c3.24 0 5.97-1.07 7.96-2.91l-3.7-2.87c-1.03.69-2.35 1.1-3.96 1.1-3.1 0-5.73-2.66-6.64-5.46L1.5 15.8c1.89 3.85 5.85 6.5 10.5 6.5z" />
+            <div className="relative w-full rounded-xl overflow-hidden group">
+              <button className="w-full bg-surface-container-low border border-border hover:bg-surface-container-high hover:border-on-surface-variant/30 text-on-surface font-title-card py-4 rounded-xl transition-all flex items-center justify-center gap-3">
+                <svg className="w-5 h-5 group-hover:scale-110 transition-transform" viewBox="0 0 24 24">
+                  <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="currentColor"></path>
+                  <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="currentColor"></path>
+                  <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="currentColor"></path>
+                  <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="currentColor"></path>
                 </svg>
-                <span>Continue with Google</span>
+                Sign in with Google
               </button>
               <div className="absolute inset-0 opacity-0 overflow-hidden cursor-pointer w-full h-full flex justify-center items-center scale-110">
                 <GoogleLogin
@@ -407,27 +250,31 @@ function SignInFormContent() {
               </div>
             </div>
 
-            {/* Footer trust and alternative links */}
-            <div className="text-center space-y-4">
-              <p className="text-sm font-medium text-[#64748b]">
-                Don't have an account?{" "}
-                <Link href="/signup" className="text-[#0f766e] font-bold hover:underline hover:text-[#0d9488]">
-                  Sign up
-                </Link>
+            <footer className="mt-12 text-center">
+              <p className="font-body-compact text-text-muted">
+                Don't have an institutional account? 
+                <Link href="/signup" className="text-primary font-semibold hover:underline ml-1">Sign up</Link>
               </p>
-              
-              <div className="flex items-center justify-center gap-1.5 text-xs text-[#94a3b8] font-semibold">
-                <svg className="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                </svg>
-                <span>Your health data is encrypted and securely handled.</span>
-              </div>
-            </div>
-
+            </footer>
           </div>
         </section>
+      </main>
 
-      </div>
+      {/* Footer for Metadata and Legal */}
+      <footer className="w-full py-8 border-t border-border bg-surface-container-low">
+        <div className="px-margin-desktop max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-component-gap">
+          <div className="flex flex-col gap-2">
+            <span className="font-title-card text-title-card text-on-surface">CorMetrics</span>
+            <p className="font-metadata text-metadata text-text-muted max-w-md">© 2024 CorMetrics. For clinical decision support only. Not a replacement for professional medical advice.</p>
+          </div>
+          <div className="flex flex-wrap gap-x-8 gap-y-4">
+            <a href="#" className="font-metadata text-metadata text-text-muted hover:text-on-surface transition-colors">Privacy Policy</a>
+            <a href="#" className="font-metadata text-metadata text-text-muted hover:text-on-surface transition-colors">Terms of Service</a>
+            <a href="#" className="font-metadata text-metadata text-text-muted hover:text-on-surface transition-colors">HIPAA Compliance</a>
+            <a href="#" className="font-metadata text-metadata text-text-muted hover:text-on-surface transition-colors">Contact Support</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
@@ -435,13 +282,10 @@ function SignInFormContent() {
 export default function SignInPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center bg-[#0b1220] text-white">
+      <div className="min-h-screen flex items-center justify-center bg-background text-primary">
         <div className="flex flex-col items-center gap-3">
-          <svg className="w-8 h-8 animate-spin text-[#0f766e]" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-          </svg>
-          <span className="text-sm font-semibold tracking-wider text-slate-400">Loading CardioSense AI...</span>
+          <span className="material-symbols-outlined animate-spin text-3xl">sync</span>
+          <span className="text-sm font-semibold tracking-wider">Loading CorMetrics...</span>
         </div>
       </div>
     }>
