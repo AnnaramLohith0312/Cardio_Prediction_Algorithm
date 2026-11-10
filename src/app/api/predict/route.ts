@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
     }
 
     // 3. Proxy to the FastAPI Backend
-    const backendUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const backendUrl = process.env.NEXT_PUBLIC_API_URL || req.nextUrl.origin;
     
     // Pass along Authorization header if present
     const authHeader = req.headers.get("Authorization");
