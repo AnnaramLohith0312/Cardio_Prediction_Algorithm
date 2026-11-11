@@ -53,11 +53,17 @@ export default function Home() {
 <p className="font-body-main text-body-main text-text-muted max-w-xl">CorMetrics leverages an ensemble ML pipeline to provide precise, clinical-grade cardiovascular risk assessments in seconds. Designed for modern practitioners.</p>
 </div>
 <div className="flex flex-wrap gap-4 pt-4 transition-all duration-700 opacity-100 translate-y-0">
-<button className="bg-teal-accent text-white font-title-card text-title-card px-8 py-4 rounded-xl hover:brightness-110 transition-all shadow-lg shadow-teal-accent/20 flex items-center gap-2">
-                            Start Risk Assessment
-                            <span className="material-symbols-outlined text-[18px]" data-icon="arrow_forward">arrow_forward</span>
+<button
+  type="button"
+  onClick={() => router.push("/assess")}
+  className="bg-teal-accent text-white font-title-card text-title-card px-8 py-4 rounded-xl hover:brightness-110 transition-all shadow-lg shadow-teal-accent/20 flex items-center gap-2"
+>
 </button>
-<button className="border border-border text-text-primary font-title-card text-title-card px-8 py-4 rounded-xl hover:bg-surface-container-high transition-all">
+<button
+  type="button"
+  onClick={() => router.push("/dashboard")}
+  className="border border-border text-text-primary font-title-card text-title-card px-8 py-4 rounded-xl hover:bg-surface-container-high transition-all"
+>
                             View Dashboard
                         </button>
 </div>
