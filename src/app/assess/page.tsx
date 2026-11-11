@@ -133,8 +133,7 @@ export default function PredictPage() {
       const headers: HeadersInit = { "Content-Type": "application/json" };
       if (token) headers["Authorization"] = `Bearer ${token}`;
 
-      const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-      const res = await fetch(`${API_BASE_URL}/api/v1/predict/`, {
+     const res = await fetch("/api/v1/predict", {
         method: "POST",
         headers,
         body: JSON.stringify(payload),
